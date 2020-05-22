@@ -31,7 +31,7 @@ code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
 
-stat      : print | assign
+stat      : print | assign | declare
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -46,6 +46,10 @@ stat      : print | assign
                YYACCEPT;
                }
           ;
+declare   : Int Ident Semicolon 
+            | Double Ident Semicolon
+            | Bool Ident Semicolon
+            ;
 print     : Print
                {
                Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
