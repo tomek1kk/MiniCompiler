@@ -4,11 +4,12 @@
 
 IntNumber   ([1-9][0-9]*)|0
 RealNumber  ([1-9][0-9]*\.[0-9]+)|(0\.[0-9]+)
-Ident		([a-zA-Z])[0-9a-zA-Z]*
+Ident		(("@"|"$")[a-z])|(([a-zA-Z])[0-9a-zA-Z]*)
 PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 
 %%
-program if else while read write return int double bool true false
+"print"       { return (int)Tokens.Print; }
+"exit"        { return (int)Tokens.Exit; }
 "program"	  { return (int)Tokens.Program; }
 "if"		  { return (int)Tokens.If; }
 "else"  	  { return (int)Tokens.Else; }
@@ -31,7 +32,10 @@ program if else while read write return int double bool true false
 "/"           { return (int)Tokens.Divides; }
 "("           { return (int)Tokens.OpenPar; }
 ")"           { return (int)Tokens.ClosePar; }
-"\r"          { return (int)Tokens.Endl; }
+"{"			  { return (int)Tokens.OpenBracket; }
+"}"			  { return (int)Tokens.CloseBracket; }
+";"			  { return (int)Tokens.Semicolon; }
+"\r"          { }
 <<EOF>>       { return (int)Tokens.Eof; }
 " "           { }
 "\t"          { }

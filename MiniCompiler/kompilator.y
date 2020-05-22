@@ -9,23 +9,26 @@ public string  val;
 public char    type;
 }
 
-%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Endl Eof Error
+%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Eof Error 
+%token Program If Else While Read Write Return Int Double Bool True False
+%token OpenBracket CloseBracket Semicolon
 %token <val> Ident IntNumber RealNumber
 
-%type <type> line exp term factor
+%type <type> code stat exp term factor
 
 %%
-
-start     : start line { ++lineno; }
-          | line { ++lineno; }
+start    : Program OpenBracket code CloseBracket Eof 
+           ;
+code     : code stat { ++lineno; }
+          | stat { ++lineno; }
           ;
 
-line      : Print
+stat      : Print
                {
                Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
                }
-            exp end
+            exp Semicolon
                {
                Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
@@ -36,7 +39,7 @@ line      : Print
                {
                Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                }
-            exp end
+            exp Semicolon
                {
                if ( $1[0]=='@' && $4!='i' )
                    {
@@ -51,7 +54,7 @@ line      : Print
                    Compiler.EmitCode("");
                    }
                }
-          | Exit Endl
+          | Exit Semicolon
                {
                Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
@@ -59,15 +62,7 @@ line      : Print
                Compiler.EmitCode("");
                YYACCEPT;
                }
-          | Exit Eof
-               {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
-               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
-               Compiler.EmitCode("");
-               YYACCEPT;
-               }
-          | error Endl
+          | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
                ++Compiler.errors;
@@ -76,23 +71,6 @@ line      : Print
           | error Eof
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
-               ++Compiler.errors;
-               yyerrok();
-               YYACCEPT;
-               }
-          | Eof
-               {
-               Console.WriteLine("  line {0,3}:  syntax error - unexpected symbol Eof",lineno);
-               ++Compiler.errors;
-               yyerrok();
-               YYACCEPT;
-               }
-          ;
-
-end       : Endl
-          | Eof
-               {
-               Console.WriteLine("  line {0,3}:  syntax error - unexpected symbol Eof",lineno);
                ++Compiler.errors;
                yyerrok();
                YYACCEPT;
