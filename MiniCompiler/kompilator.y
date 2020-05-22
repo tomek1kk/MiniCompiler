@@ -31,33 +31,7 @@ code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
 
-stat      : Print
-               {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
-               }
-            exp Semicolon
-               {
-               Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
-               Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
-               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
-               Compiler.EmitCode("");
-               }
-          | Ident Assign exp Semicolon
-               {
-               if ( $1[0]=='@' && $4!='i' )
-                   {
-                   Console.WriteLine("  line {0,3}:  semantic error - cannot convert real to int",lineno);
-                   ++Compiler.errors;
-                   }
-               else
-                   {
-                   if ( $1[0]=='$' && $4!='r' )
-                       Compiler.EmitCode("conv.r8");
-                   Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
-                   Compiler.EmitCode("");
-                   }
-               }  
+stat      : print | assign
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -72,7 +46,35 @@ stat      : Print
                YYACCEPT;
                }
           ;
-
+print     : Print
+               {
+               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
+               }
+            exp Semicolon
+               {
+               Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
+               Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
+               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
+               Compiler.EmitCode("");
+               }
+          ;
+assign    : Ident Assign exp Semicolon
+               {
+               if ( $1[0]=='@' && $3!='i' )
+                   {
+                   Console.WriteLine("  line {0,3}:  semantic error - cannot convert real to int",lineno);
+                   ++Compiler.errors;
+                   }
+               else
+                   {
+                   if ( $1[0]=='$' && $3!='r' )
+                       Compiler.EmitCode("conv.r8");
+                   Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
+                   Compiler.EmitCode("");
+                   }
+               } 
+               ;
 exp       : exp Plus term
                { $$ = BinaryOpGenCode(Tokens.Plus, $1, $3); }
           | exp Minus term
