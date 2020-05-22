@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 22.05.2020 17:09:55
+// DateTime: 22.05.2020 17:33:45
 // UserName: tomek
-// Input file <kompilator.y - 22.05.2020 17:09:49>
+// Input file <kompilator.y - 22.05.2020 17:33:39>
 
 // options: lines gplex
 
@@ -59,63 +59,62 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
   private static Dictionary<int, string> aliases;
 #pragma warning restore 649
   private static Rule[] rules = new Rule[22];
-  private static State[] states = new State[39];
+  private static State[] states = new State[38];
   private static string[] nonTerms = new string[] {
       "code", "stat", "exp", "term", "factor", "start", "$accept", "Anon@1", 
-      "Anon@2", };
+      "Anon@2", "Anon@3", };
 
   static Parser() {
     states[0] = new State(new int[]{15,3},new int[]{-6,1});
     states[1] = new State(new int[]{3,2});
     states[2] = new State(-1);
     states[3] = new State(new int[]{27,4});
-    states[4] = new State(new int[]{4,9,30,29,5,34,2,36},new int[]{-1,5,-2,38});
-    states[5] = new State(new int[]{28,6,4,9,30,29,5,34,2,36},new int[]{-2,8});
-    states[6] = new State(new int[]{13,7});
-    states[7] = new State(-2);
+    states[4] = new State(new int[]{4,10,30,30,2,35},new int[]{-1,5,-2,37});
+    states[5] = new State(new int[]{28,6,4,10,30,30,2,35},new int[]{-2,9});
+    states[6] = new State(-2,new int[]{-8,7});
+    states[7] = new State(new int[]{13,8});
     states[8] = new State(-3);
-    states[9] = new State(-5,new int[]{-8,10});
-    states[10] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-3,11,-4,28,-5,27});
-    states[11] = new State(new int[]{29,12,7,13,8,20});
-    states[12] = new State(-6);
-    states[13] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-4,14,-5,27});
-    states[14] = new State(new int[]{9,15,10,22,29,-12,7,-12,8,-12,12,-12});
-    states[15] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-5,16});
-    states[16] = new State(-15);
-    states[17] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-3,18,-4,28,-5,27});
-    states[18] = new State(new int[]{12,19,7,13,8,20});
-    states[19] = new State(-18);
-    states[20] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-4,21,-5,27});
-    states[21] = new State(new int[]{9,15,10,22,29,-13,7,-13,8,-13,12,-13});
-    states[22] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-5,23});
-    states[23] = new State(-16);
-    states[24] = new State(-19);
-    states[25] = new State(-20);
-    states[26] = new State(-21);
-    states[27] = new State(-17);
-    states[28] = new State(new int[]{9,15,10,22,29,-14,7,-14,8,-14,12,-14});
-    states[29] = new State(new int[]{6,30});
-    states[30] = new State(-7,new int[]{-9,31});
-    states[31] = new State(new int[]{11,17,31,24,32,25,30,26},new int[]{-3,32,-4,28,-5,27});
-    states[32] = new State(new int[]{29,33,7,13,8,20});
-    states[33] = new State(-8);
-    states[34] = new State(new int[]{29,35});
-    states[35] = new State(-9);
-    states[36] = new State(new int[]{13,37,28,-10,4,-10,30,-10,5,-10,2,-10});
-    states[37] = new State(-11);
-    states[38] = new State(-4);
+    states[9] = new State(-4);
+    states[10] = new State(-6,new int[]{-9,11});
+    states[11] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-3,12,-4,29,-5,28});
+    states[12] = new State(new int[]{29,13,7,14,8,21});
+    states[13] = new State(-7);
+    states[14] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-4,15,-5,28});
+    states[15] = new State(new int[]{9,16,10,23,29,-12,7,-12,8,-12,12,-12});
+    states[16] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-5,17});
+    states[17] = new State(-15);
+    states[18] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-3,19,-4,29,-5,28});
+    states[19] = new State(new int[]{12,20,7,14,8,21});
+    states[20] = new State(-18);
+    states[21] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-4,22,-5,28});
+    states[22] = new State(new int[]{9,16,10,23,29,-13,7,-13,8,-13,12,-13});
+    states[23] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-5,24});
+    states[24] = new State(-16);
+    states[25] = new State(-19);
+    states[26] = new State(-20);
+    states[27] = new State(-21);
+    states[28] = new State(-17);
+    states[29] = new State(new int[]{9,16,10,23,29,-14,7,-14,8,-14,12,-14});
+    states[30] = new State(new int[]{6,31});
+    states[31] = new State(-8,new int[]{-10,32});
+    states[32] = new State(new int[]{11,18,31,25,32,26,30,27},new int[]{-3,33,-4,29,-5,28});
+    states[33] = new State(new int[]{29,34,7,14,8,21});
+    states[34] = new State(-9);
+    states[35] = new State(new int[]{13,36,28,-10,4,-10,30,-10,2,-10});
+    states[36] = new State(-11);
+    states[37] = new State(-5);
 
     for (int sNo = 0; sNo < states.Length; sNo++) states[sNo].number = sNo;
 
     rules[1] = new Rule(-7, new int[]{-6,3});
-    rules[2] = new Rule(-6, new int[]{15,27,-1,28,13});
-    rules[3] = new Rule(-1, new int[]{-1,-2});
-    rules[4] = new Rule(-1, new int[]{-2});
-    rules[5] = new Rule(-8, new int[]{});
-    rules[6] = new Rule(-2, new int[]{4,-8,-3,29});
-    rules[7] = new Rule(-9, new int[]{});
-    rules[8] = new Rule(-2, new int[]{30,6,-9,-3,29});
-    rules[9] = new Rule(-2, new int[]{5,29});
+    rules[2] = new Rule(-8, new int[]{});
+    rules[3] = new Rule(-6, new int[]{15,27,-1,28,-8,13});
+    rules[4] = new Rule(-1, new int[]{-1,-2});
+    rules[5] = new Rule(-1, new int[]{-2});
+    rules[6] = new Rule(-9, new int[]{});
+    rules[7] = new Rule(-2, new int[]{4,-9,-3,29});
+    rules[8] = new Rule(-10, new int[]{});
+    rules[9] = new Rule(-2, new int[]{30,6,-10,-3,29});
     rules[10] = new Rule(-2, new int[]{2});
     rules[11] = new Rule(-2, new int[]{2,13});
     rules[12] = new Rule(-3, new int[]{-3,7,-4});
@@ -142,26 +141,37 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #pragma warning disable 162, 1522
     switch (action)
     {
-      case 3: // code -> code, stat
-#line 22 "kompilator.y"
+      case 2: // Anon@1 -> /* empty */
+#line 21 "kompilator.y"
+                {
+               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
+               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
+               Compiler.EmitCode("");
+               YYAccept();
+               }
+#line default
+        break;
+      case 4: // code -> code, stat
+#line 30 "kompilator.y"
                      { ++lineno; }
 #line default
         break;
-      case 4: // code -> stat
-#line 23 "kompilator.y"
+      case 5: // code -> stat
+#line 31 "kompilator.y"
                  { ++lineno; }
 #line default
         break;
-      case 5: // Anon@1 -> /* empty */
-#line 27 "kompilator.y"
+      case 6: // Anon@2 -> /* empty */
+#line 35 "kompilator.y"
                {
                Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
                }
 #line default
         break;
-      case 6: // stat -> Print, Anon@1, exp, Semicolon
-#line 32 "kompilator.y"
+      case 7: // stat -> Print, Anon@2, exp, Semicolon
+#line 40 "kompilator.y"
                {
                Compiler.EmitCode("box [mscorlib]System.{0}",ValueStack[ValueStack.Depth-2].type=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",ValueStack[ValueStack.Depth-2].type=='i'?"i":"r");
@@ -170,15 +180,15 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                }
 #line default
         break;
-      case 7: // Anon@2 -> /* empty */
-#line 39 "kompilator.y"
+      case 8: // Anon@3 -> /* empty */
+#line 47 "kompilator.y"
                {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                }
 #line default
         break;
-      case 8: // stat -> Ident, Assign, Anon@2, exp, Semicolon
-#line 43 "kompilator.y"
+      case 9: // stat -> Ident, Assign, Anon@3, exp, Semicolon
+#line 51 "kompilator.y"
                {
                if ( ValueStack[ValueStack.Depth-5].val[0]=='@' && ValueStack[ValueStack.Depth-2].type!='i' )
                    {
@@ -192,17 +202,6 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                    Compiler.EmitCode("stloc _{0}{1}", ValueStack[ValueStack.Depth-5].val[0]=='@'?'i':'r', ValueStack[ValueStack.Depth-5].val[1]);
                    Compiler.EmitCode("");
                    }
-               }
-#line default
-        break;
-      case 9: // stat -> Exit, Semicolon
-#line 58 "kompilator.y"
-               {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
-               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
-               Compiler.EmitCode("");
-               YYAccept();
                }
 #line default
         break;

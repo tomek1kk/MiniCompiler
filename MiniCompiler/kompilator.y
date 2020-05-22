@@ -17,7 +17,15 @@ public char    type;
 %type <type> code stat exp term factor
 
 %%
-start    : Program OpenBracket code CloseBracket Eof 
+start    : Program OpenBracket code CloseBracket 
+                {
+               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
+               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
+               Compiler.EmitCode("");
+               YYACCEPT;
+               }
+               Eof 
            ;
 code     : code stat { ++lineno; }
           | stat { ++lineno; }
@@ -35,11 +43,7 @@ stat      : Print
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
                Compiler.EmitCode("");
                }
-          | Ident Assign
-               {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               }
-            exp Semicolon
+          | Ident Assign exp Semicolon
                {
                if ( $1[0]=='@' && $4!='i' )
                    {
@@ -53,15 +57,7 @@ stat      : Print
                    Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
                    Compiler.EmitCode("");
                    }
-               }
-          | Exit Semicolon
-               {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
-               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
-               Compiler.EmitCode("");
-               YYACCEPT;
-               }
+               }  
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
