@@ -24,7 +24,7 @@ public char    type;
 %%
 start    : Program OpenBracket code CloseBracket 
                 {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
                Compiler.EmitCode("");
@@ -51,32 +51,31 @@ stat      : write | assign | declare | cond
                YYACCEPT;
                }
           ;
-cond      : If OpenPar exp Equal exp ClosePar OpenBracket
-               {
-                Compiler.EmitCode("ceq");
-                Compiler.EmitCode("brfalse et2");
-               }
-              stat
-              CloseBracket
-              {
-                Compiler.EmitCode("et2:");
-              }
+cond      : if | if { Compiler.EmitCode("br elseend"); } Else OpenBracket code CloseBracket { Compiler.EmitCode("elseend:"); }
+
+          ;
+if        : If OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); } code CloseBracket { Compiler.EmitCode("endif:"); }
           ;
 bool      : exp Equal exp 
             {
-                
+                Compiler.EmitCode("ceq");
             }
             | exp NotEqual exp
             {
+                Compiler.EmitCode("ceq");
+                Compiler.EmitCode("neg");
             }
             | exp Greater exp
             {
+                Compiler.EmitCode("cgt");
             }
             | exp GreaterEqual exp
             {
+                
             }
             | exp Less exp
             {
+                Compiler.EmitCode("clt");
             }
             | exp LessEqual
             {
@@ -104,7 +103,7 @@ declare   : Int Ident Semicolon
             ;
 write     : Write
                {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
                }
             exp Semicolon
