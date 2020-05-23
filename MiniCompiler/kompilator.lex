@@ -4,7 +4,7 @@
 
 IntNumber   ([1-9][0-9]*)|0
 RealNumber  ([1-9][0-9]*\.[0-9]+)|(0\.[0-9]+)
-Ident		(("@"|"$")[a-z])|(([a-zA-Z])[0-9a-zA-Z]*)
+Ident		([a-zA-Z])[0-9a-zA-Z]*
 PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 
 %%

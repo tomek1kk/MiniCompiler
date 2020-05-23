@@ -9,12 +9,17 @@ public string  val;
 public char    type;
 }
 
-%token Print Exit Assign Plus Minus Multiplies Divides OpenPar ClosePar Eof Error 
-%token Program If Else While Read Write Return Int Double Bool True False
-%token OpenBracket CloseBracket Semicolon
+%token Print Exit
+%token Assign Plus Minus Multiplies Divides 
+%token Program Return  Eof Error 
+%token If Else While
+%token Read Write
+%token Int Double Bool
+%token True False
+%token OpenBracket CloseBracket Semicolon OpenPar ClosePar
 %token <val> Ident IntNumber RealNumber
 
-%type <type> code stat exp term factor
+%type <type> code stat exp term factor declare
 
 %%
 start    : Program OpenBracket code CloseBracket 
@@ -46,9 +51,24 @@ stat      : print | assign | declare
                YYACCEPT;
                }
           ;
-declare   : Int Ident Semicolon 
+declare   : Int Ident Semicolon
+            {
+                Compiler.EmitCode(".locals init ( int32 i{0} )", $2);
+                Compiler.EmitCode("ldc.i4 0");
+                Compiler.EmitCode("stloc i{0}", $2);
+            }
             | Double Ident Semicolon
+            {
+                Compiler.EmitCode(".locals init ( float64 f{0} )", $2);
+                Compiler.EmitCode("ldc.r8 0");
+                Compiler.EmitCode("stloc f{0}", $2);
+            }
             | Bool Ident Semicolon
+            {
+                Compiler.EmitCode(".locals init ( int32 b{0} )", $2);
+                Compiler.EmitCode("ldc.i4 0");
+                Compiler.EmitCode("stloc b{0}", $2);
+            }
             ;
 print     : Print
                {
@@ -110,7 +130,7 @@ factor    : OpenPar exp ClosePar
                }
           | Ident
                {
-               Compiler.EmitCode("ldloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
+               Compiler.EmitCode("ldloc i{0}", $1);
                $$ = $1[0]=='@'?'i':'r';
                }
           ;
