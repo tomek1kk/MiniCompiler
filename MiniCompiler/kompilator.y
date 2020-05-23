@@ -9,17 +9,17 @@ public string  val;
 public char    type;
 }
 
-%token Print Exit
 %token Assign Plus Minus Multiplies Divides 
-%token Program Return  Eof Error 
+%token Program Return Eof Error 
 %token If Else While
 %token Read Write
 %token Int Double Bool
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar
+%token Equal NotEqual Greater GreaterEqual Less LessEqual
 %token <val> Ident IntNumber RealNumber
 
-%type <type> code stat exp term factor declare
+%type <type> code stat exp term factor declare bool cond
 
 %%
 start    : Program OpenBracket code CloseBracket 
@@ -36,7 +36,7 @@ code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
 
-stat      : print | assign | declare
+stat      : write | assign | declare | cond
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -51,11 +51,43 @@ stat      : print | assign | declare
                YYACCEPT;
                }
           ;
+cond      : If OpenPar exp Equal exp ClosePar OpenBracket
+               {
+                Compiler.EmitCode("ceq");
+                Compiler.EmitCode("brfalse et2");
+               }
+              stat
+              CloseBracket
+              {
+                Compiler.EmitCode("et2:");
+              }
+          ;
+bool      : exp Equal exp 
+            {
+                
+            }
+            | exp NotEqual exp
+            {
+            }
+            | exp Greater exp
+            {
+            }
+            | exp GreaterEqual exp
+            {
+            }
+            | exp Less exp
+            {
+            }
+            | exp LessEqual
+            {
+            }
+            | True 
+            | False
+          ; 
 declare   : Int Ident Semicolon
             {
                 Compiler.EmitCode(".locals init ( int32 i{0} )", $2);
-                Compiler.EmitCode("ldc.i4 0");
-                Compiler.EmitCode("stloc i{0}", $2);
+
             }
             | Double Ident Semicolon
             {
@@ -70,7 +102,7 @@ declare   : Int Ident Semicolon
                 Compiler.EmitCode("stloc b{0}", $2);
             }
             ;
-print     : Print
+write     : Write
                {
                Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
@@ -94,7 +126,9 @@ assign    : Ident Assign exp Semicolon
                    {
                    if ( $1[0]=='$' && $3!='r' )
                        Compiler.EmitCode("conv.r8");
-                   Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
+
+                    Compiler.EmitCode("stloc i{0}", $1);
+                   //Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
                    Compiler.EmitCode("");
                    }
                } 

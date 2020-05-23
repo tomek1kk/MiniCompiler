@@ -8,8 +8,6 @@ Ident		([a-zA-Z])[0-9a-zA-Z]*
 PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 
 %%
-"print"       { return (int)Tokens.Print; }
-"exit"        { return (int)Tokens.Exit; }
 "program"	  { return (int)Tokens.Program; }
 "if"		  { return (int)Tokens.If; }
 "else"  	  { return (int)Tokens.Else; }
@@ -35,6 +33,12 @@ PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 "{"			  { return (int)Tokens.OpenBracket; }
 "}"			  { return (int)Tokens.CloseBracket; }
 ";"			  { return (int)Tokens.Semicolon; }
+"=="		  { return (int)Tokens.Equal; }
+"!="		  { return (int)Tokens.NotEqual; }
+">"			  { return (int)Tokens.Greater; }
+">="		  { return (int)Tokens.GreaterEqual; }
+"<"			  { return (int)Tokens.Less; }
+"<="		  { return (int)Tokens.LessEqual; }
 "\r"          { }
 <<EOF>>       { return (int)Tokens.Eof; }
 " "           { }
