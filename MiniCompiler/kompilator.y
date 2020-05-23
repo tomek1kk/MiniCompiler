@@ -19,7 +19,7 @@ public char    type;
 %token Equal NotEqual Greater GreaterEqual Less LessEqual
 %token <val> Ident IntNumber RealNumber
 
-%type <type> code stat exp term factor declare bool cond
+%type <type> code stat exp term factor declare bool cond while
 
 %%
 start    : Program OpenBracket code CloseBracket 
@@ -36,7 +36,7 @@ code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
 
-stat      : write | assign | declare | cond
+stat      : write | assign | declare | cond | while
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -52,7 +52,10 @@ stat      : write | assign | declare | cond
                }
           ;
 cond      : if | if { Compiler.EmitCode("br elseend"); } Else OpenBracket code CloseBracket { Compiler.EmitCode("elseend:"); }
-
+          ;
+while     : While { Compiler.EmitCode("while:"); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endwhile"); }
+            code
+            { Compiler.EmitCode("br while"); } CloseBracket { Compiler.EmitCode("endwhile:"); }
           ;
 if        : If OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); } code CloseBracket { Compiler.EmitCode("endif:"); }
           ;
@@ -183,8 +186,8 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
         Compiler.EmitCode("conv.r8");
         Compiler.EmitCode("ldloc temp");
         }
-    if ( type2!=type )
-        Compiler.EmitCode("conv.r8");
+   // if ( type2!=type )
+   //     Compiler.EmitCode("conv.r8");
     switch ( t )
         {
         case Tokens.Plus:

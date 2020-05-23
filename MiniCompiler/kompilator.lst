@@ -1,10 +1,10 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <kompilator.y - 23.05.2020 16:04:35>
+//  GPPG error listing for yacc source file <kompilator.y - 23.05.2020 17:45:18>
 // ==========================================================================
 //  Version:  1.5.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 23.05.2020 16:04:41
+//  DateTime: 23.05.2020 17:45:28
 //  UserName: tomek
 // ==========================================================================
 
@@ -33,11 +33,9 @@ public char    type;
 %type <type> code stat exp term factor declare bool cond
 
 %%
-// Warning: NonTerminal symbol "bool" is unreachable
-// -------------------------------------------------
 start    : Program OpenBracket code CloseBracket 
                 {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
                Compiler.EmitCode("");
@@ -64,32 +62,35 @@ stat      : write | assign | declare | cond
                YYACCEPT;
                }
           ;
-cond      : If OpenPar exp Equal exp ClosePar OpenBracket
-               {
-                Compiler.EmitCode("ceq");
-                Compiler.EmitCode("brfalse et2");
-               }
-              stat
-              CloseBracket
-              {
-                Compiler.EmitCode("et2:");
-              }
+cond      : if | if { Compiler.EmitCode("br elseend"); } Else OpenBracket code CloseBracket { Compiler.EmitCode("elseend:"); }
+          ;
+while     : While { Compiler.EmitCode("while:"); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); }
+            code
+            { Compiler.EmitCode("br while"); } CloseBracket { Compiler.EmitCode("endwhile:"); }
+if        : If OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); } code CloseBracket { Compiler.EmitCode("endif:"); }
+// Error: Syntax error, unexpected anchoredSymbol
+// ----------------------------------------------
           ;
 bool      : exp Equal exp 
             {
-                
+                Compiler.EmitCode("ceq");
             }
             | exp NotEqual exp
             {
+                Compiler.EmitCode("ceq");
+                Compiler.EmitCode("neg");
             }
             | exp Greater exp
             {
+                Compiler.EmitCode("cgt");
             }
             | exp GreaterEqual exp
             {
+                
             }
             | exp Less exp
             {
+                Compiler.EmitCode("clt");
             }
             | exp LessEqual
             {
@@ -117,7 +118,7 @@ declare   : Int Ident Semicolon
             ;
 write     : Write
                {
-               Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
+               //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
                }
             exp Semicolon
