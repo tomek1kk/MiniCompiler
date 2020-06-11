@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 11.06.2020 20:20:08
+// DateTime: 11.06.2020 20:33:58
 // UserName: tomek
-// Input file <kompilator.y - 11.06.2020 20:20:03>
+// Input file <kompilator.y - 11.06.2020 20:32:23>
 
 // options: lines gplex
 
@@ -464,7 +464,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 36: // Anon@5 -> /* empty */
 #line 204 "kompilator.y"
             {
-               Compiler.EmitCode("ldstr \"  Write: {0}\"");
+               Compiler.EmitCode("ldstr \"{0}\"");
             }
 #line default
         break;
@@ -473,7 +473,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             {
                Compiler.EmitCode("box [mscorlib]System.{0}",ValueStack[ValueStack.Depth-2].type=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",ValueStack[ValueStack.Depth-2].type=='i'?"i":"r");
-               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
+               Compiler.EmitCode("call void [mscorlib]System.Console::Write(string,object,object)");
                Compiler.EmitCode("");
             }
 #line default
@@ -481,16 +481,13 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 38: // write -> Write, String, Semicolon
 #line 215 "kompilator.y"
             {
-                Compiler.EmitCode("ldstr \"  Write: \"");
-                Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
                 Compiler.EmitCode("ldstr {0}", ValueStack[ValueStack.Depth-2].val);
                 Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
-                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine()");
             }
 #line default
         break;
       case 39: // assign -> Ident, Assign, exp, Semicolon
-#line 224 "kompilator.y"
+#line 221 "kompilator.y"
             {
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-4].val)) 
                {
@@ -522,42 +519,42 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 40: // exp -> exp, Plus, term
-#line 254 "kompilator.y"
+#line 251 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Plus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 41: // exp -> exp, Minus, term
-#line 256 "kompilator.y"
+#line 253 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Minus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 42: // exp -> term
-#line 258 "kompilator.y"
+#line 255 "kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 43: // term -> term, Multiplies, factor
-#line 262 "kompilator.y"
+#line 259 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Multiplies, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 44: // term -> term, Divides, factor
-#line 264 "kompilator.y"
+#line 261 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Divides, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 45: // term -> factor
-#line 266 "kompilator.y"
+#line 263 "kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 46: // factor -> OpenPar, exp, ClosePar
-#line 270 "kompilator.y"
+#line 267 "kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-2].type; }
 #line default
         break;
       case 47: // factor -> IntNumber
-#line 272 "kompilator.y"
+#line 269 "kompilator.y"
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse(ValueStack[ValueStack.Depth-1].val));
                CurrentSemanticValue.type = 'i'; 
@@ -565,7 +562,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 48: // factor -> RealNumber
-#line 277 "kompilator.y"
+#line 274 "kompilator.y"
           {
                double d = double.Parse(ValueStack[ValueStack.Depth-1].val,System.Globalization.CultureInfo.InvariantCulture) ;
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
@@ -574,7 +571,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 49: // factor -> True
-#line 283 "kompilator.y"
+#line 280 "kompilator.y"
           {
                 Compiler.EmitCode("ldc.i4 1");
                 CurrentSemanticValue.type = 'b';
@@ -582,7 +579,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 50: // factor -> False
-#line 288 "kompilator.y"
+#line 285 "kompilator.y"
           {
                 Compiler.EmitCode("ldc.i4 0");
                 CurrentSemanticValue.type = 'b';
@@ -590,7 +587,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 51: // factor -> Ident
-#line 293 "kompilator.y"
+#line 290 "kompilator.y"
           {
                Compiler.EmitCode("ldloc {0}", ValueStack[ValueStack.Depth-1].val);
                switch(Compiler.symbolTable[ValueStack[ValueStack.Depth-1].val])
@@ -626,7 +623,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
         return CharToString((char)terminal);
   }
 
-#line 315 "kompilator.y"
+#line 312 "kompilator.y"
 
 int lineno = 1;
 string temp;

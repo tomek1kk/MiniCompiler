@@ -202,22 +202,19 @@ declare   : Int Ident Semicolon
             ;
 write     : Write
             {
-               Compiler.EmitCode("ldstr \"  Write: {0}\"");
+               Compiler.EmitCode("ldstr \"{0}\"");
             }
             exp Semicolon
             {
                Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
-               Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
+               Compiler.EmitCode("call void [mscorlib]System.Console::Write(string,object,object)");
                Compiler.EmitCode("");
             }
             | Write String Semicolon
             {
-                Compiler.EmitCode("ldstr \"  Write: \"");
-                Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
                 Compiler.EmitCode("ldstr {0}", $2);
                 Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
-                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine()");
             }
           ;
 assign    : Ident Assign exp Semicolon
