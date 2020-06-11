@@ -54,9 +54,21 @@ block     : OpenBracket code CloseBracket
           ;
 cond      : ifelse | if
           ;
-while     : While { Compiler.EmitCode("while{0}:", ++whilecounter); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endwhile{0}", whilecounter); }
+while     : While
+            { 
+                temp = Compiler.NewTemp();
+                Compiler.EmitCode("{0}:", temp);
+            }
+            OpenPar bool ClosePar 
+            { 
+                temp2 = Compiler.NewTemp();
+                Compiler.EmitCode("brfalse {0}", temp2); 
+            }
             stat
-            { Compiler.EmitCode("br while{0}", whilecounter); } CloseBracket { Compiler.EmitCode("endwhile{0}:", whilecounter); }
+            { 
+                Compiler.EmitCode("br {0}", temp);
+                Compiler.EmitCode("{0}:", temp2);
+            }
           ;
 ifhead     : If OpenPar bool ClosePar
             {
