@@ -1,10 +1,10 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <kompilator.y - 23.05.2020 17:45:18>
+//  GPPG error listing for yacc source file <kompilator.y - 11.06.2020 12:01:10>
 // ==========================================================================
 //  Version:  1.5.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 23.05.2020 17:45:28
+//  DateTime: 11.06.2020 12:01:14
 //  UserName: tomek
 // ==========================================================================
 
@@ -30,7 +30,7 @@ public char    type;
 %token Equal NotEqual Greater GreaterEqual Less LessEqual
 %token <val> Ident IntNumber RealNumber
 
-%type <type> code stat exp term factor declare bool cond
+%type <type> code stat exp term factor declare bool cond while
 
 %%
 start    : Program OpenBracket code CloseBracket 
@@ -46,8 +46,7 @@ start    : Program OpenBracket code CloseBracket
 code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
-
-stat      : write | assign | declare | cond
+stat      : write | assign | declare | while | block | cond
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -62,15 +61,31 @@ stat      : write | assign | declare | cond
                YYACCEPT;
                }
           ;
-cond      : if | if { Compiler.EmitCode("br elseend"); } Else OpenBracket code CloseBracket { Compiler.EmitCode("elseend:"); }
+block     : OpenBracket code CloseBracket
           ;
-while     : While { Compiler.EmitCode("while:"); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); }
-            code
-            { Compiler.EmitCode("br while"); } CloseBracket { Compiler.EmitCode("endwhile:"); }
-if        : If OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); } code CloseBracket { Compiler.EmitCode("endif:"); }
-// Error: Syntax error, unexpected anchoredSymbol
-// ----------------------------------------------
+cond      : ifelse | if
           ;
+while     : While { Compiler.EmitCode("while{0}:", ++whilecounter); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endwhile{0}", whilecounter); }
+            stat
+            { Compiler.EmitCode("br while{0}", whilecounter); } CloseBracket { Compiler.EmitCode("endwhile{0}:", whilecounter); }
+          ;
+if        : If OpenPar bool ClosePar 
+            {
+                //temp = Compiler.NewTemp();
+               // temp = "elo";
+               // Compiler.EmitCode("brfalse {0}", temp);
+            }
+            stat
+            {// Compiler.EmitCode("{0}:", temp); }
+//----------^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// Error: Position of unmatched brace
+// ----------------------------------
+          ;
+ifelse    : If OpenPar bool ClosePar 
+            stat
+            Else
+            stat
+            ;
 bool      : exp Equal exp 
             {
                 Compiler.EmitCode("ceq");
@@ -119,7 +134,7 @@ declare   : Int Ident Semicolon
 write     : Write
                {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
+               Compiler.EmitCode("ldstr \"  Write: {0}\"");
                }
             exp Semicolon
                {
@@ -184,12 +199,35 @@ factor    : OpenPar exp ClosePar
           ;
 
 %%
+// Error: Premature termination of Code Block
+// Error: Syntax error, unexpected %%, expecting codeEnd, or error
+// ---------------------------------------------------------------
 
 int lineno=1;
+//-------^^^
+// Error: This character is invalid in this context
+// Error: This character is invalid in this context
+// ------------------------------------------------
+string temp;
+int whilecounter=1;
+//-------------^^^
+// Error: This character is invalid in this context
+// Error: This character is invalid in this context
+// ------------------------------------------------
 
 public Parser(Scanner scanner) : base(scanner) { }
+//----------^^--------------^^------^^------^^
+// Error: This character is invalid in this context
+// Error: This character is invalid in this context
+// Error: This character is invalid in this context
+// Error: This character is invalid in this context
+// ------------------------------------------------
 
 private char BinaryOpGenCode(Tokens t, char type1, char type2)
+//-------------------------^^-------------------------------^^
+// Error: This character is invalid in this context
+// Error: This character is invalid in this context
+// ------------------------------------------------
     {
     char type = ( type1=='i' && type2=='i' ) ? 'i' : 'r' ;
     if ( type1!=type )
@@ -198,8 +236,8 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
         Compiler.EmitCode("conv.r8");
         Compiler.EmitCode("ldloc temp");
         }
-    if ( type2!=type )
-        Compiler.EmitCode("conv.r8");
+   // if ( type2!=type )
+   //     Compiler.EmitCode("conv.r8");
     switch ( t )
         {
         case Tokens.Plus:

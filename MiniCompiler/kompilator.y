@@ -35,8 +35,7 @@ start    : Program OpenBracket code CloseBracket
 code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
-
-stat      : write | assign | declare | cond | while
+stat      : write | assign | declare | while | block | cond
           | error
                {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -51,14 +50,39 @@ stat      : write | assign | declare | cond | while
                YYACCEPT;
                }
           ;
-cond      : if | if { Compiler.EmitCode("br elseend"); } Else OpenBracket code CloseBracket { Compiler.EmitCode("elseend:"); }
+block     : OpenBracket code CloseBracket
           ;
-while     : While { Compiler.EmitCode("while:"); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endwhile"); }
-            code
-            { Compiler.EmitCode("br while"); } CloseBracket { Compiler.EmitCode("endwhile:"); }
+cond      : ifelse | if
           ;
-if        : If OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endif"); } code CloseBracket { Compiler.EmitCode("endif:"); }
+while     : While { Compiler.EmitCode("while{0}:", ++whilecounter); } OpenPar bool ClosePar OpenBracket { Compiler.EmitCode("brfalse endwhile{0}", whilecounter); }
+            stat
+            { Compiler.EmitCode("br while{0}", whilecounter); } CloseBracket { Compiler.EmitCode("endwhile{0}:", whilecounter); }
           ;
+ifhead     : If OpenPar bool ClosePar
+            {
+                temp = Compiler.NewTemp();
+                Compiler.EmitCode("brfalse {0}", temp);
+            }
+            ;
+if        : ifhead
+            stat
+            { 
+                Compiler.EmitCode("{0}:", temp);
+            }
+          ;
+ifelse    : ifhead
+            stat
+            Else
+            {
+                temp2 = Compiler.NewTemp();
+                Compiler.EmitCode("br {0}", temp2);
+                Compiler.EmitCode("{0}:", temp);
+            }
+            stat
+            {
+                Compiler.EmitCode("{0}:", temp2);
+            }
+            ;
 bool      : exp Equal exp 
             {
                 Compiler.EmitCode("ceq");
@@ -107,7 +131,7 @@ declare   : Int Ident Semicolon
 write     : Write
                {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
-               Compiler.EmitCode("ldstr \"  Result: {0}{1}\"");
+               Compiler.EmitCode("ldstr \"  Write: {0}\"");
                }
             exp Semicolon
                {
@@ -174,6 +198,9 @@ factor    : OpenPar exp ClosePar
 %%
 
 int lineno=1;
+string temp;
+string temp2;
+int whilecounter=1;
 
 public Parser(Scanner scanner) : base(scanner) { }
 
