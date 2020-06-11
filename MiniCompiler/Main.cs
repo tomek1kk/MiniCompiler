@@ -3,6 +3,20 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using GardensPoint;
+using System.Security.Cryptography.X509Certificates;
+using System.Linq;
+
+public class Symbol
+{
+    public Symbol() { }
+    public Symbol(string ident, string type)
+    {
+        Ident = ident;
+        Type = type;
+    }
+    public string Ident { get; set; }
+    public string Type { get; set; }
+}
 
 public class Compiler
 {
@@ -10,7 +24,9 @@ public class Compiler
     public static int errors = 0;
 
     public static List<string> source;
-
+    //public static HashSet<Symbol> symbolTable = new HashSet<Symbol>();
+    public static Dictionary<string, string> symbolTable = new Dictionary<string, string>();
+    
     // arg[0] określa plik źródłowy
     // pozostałe argumenty są ignorowane
     public static int Main(string[] args)

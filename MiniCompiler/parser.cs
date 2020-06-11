@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 11.06.2020 13:51:39
+// DateTime: 11.06.2020 17:13:03
 // UserName: tomek
-// Input file <kompilator.y - 11.06.2020 13:51:36>
+// Input file <kompilator.y - 11.06.2020 17:13:00>
 
 // options: lines gplex
 
@@ -219,13 +219,13 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     {
       case 2: // Anon@1 -> /* empty */
 #line 26 "kompilator.y"
-                {
+           {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
                Compiler.EmitCode("");
                YYAccept();
-               }
+           }
 #line default
         break;
       case 4: // code -> code, stat
@@ -240,21 +240,21 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 12: // stat -> error
 #line 40 "kompilator.y"
-               {
+          {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
                ++Compiler.errors;
                yyerrok();
-               }
+          }
 #line default
         break;
       case 13: // stat -> error, Eof
 #line 46 "kompilator.y"
-               {
+          {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
                ++Compiler.errors;
                yyerrok();
                YYAccept();
-               }
+          }
 #line default
         break;
       case 17: // Anon@2 -> /* empty */
@@ -368,125 +368,150 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 32: // declare -> Int, Ident, Semicolon
 #line 137 "kompilator.y"
             {
-                Compiler.EmitCode(".locals init ( int32 i{0} )", ValueStack[ValueStack.Depth-2].val);
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != ValueStack[ValueStack.Depth-2].val))
+                {
+                    Compiler.EmitCode(".locals init ( int32 {0} )", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.symbolTable.Add(ValueStack[ValueStack.Depth-2].val, "int");
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  variable already declared!", lineno);
+                    Compiler.errors++;
+                }
 
             }
 #line default
         break;
       case 33: // declare -> Double, Ident, Semicolon
-#line 142 "kompilator.y"
+#line 151 "kompilator.y"
             {
-                Compiler.EmitCode(".locals init ( float64 f{0} )", ValueStack[ValueStack.Depth-2].val);
-                Compiler.EmitCode("ldc.r8 0");
-                Compiler.EmitCode("stloc f{0}", ValueStack[ValueStack.Depth-2].val);
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != ValueStack[ValueStack.Depth-2].val))
+                {
+                    Compiler.EmitCode(".locals init ( float64 {0} )", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.symbolTable.Add(ValueStack[ValueStack.Depth-2].val, "double");
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  variable already declared!", lineno);
+                    Compiler.errors++;
+                }
             }
 #line default
         break;
       case 34: // declare -> Bool, Ident, Semicolon
-#line 148 "kompilator.y"
+#line 164 "kompilator.y"
             {
-                Compiler.EmitCode(".locals init ( int32 b{0} )", ValueStack[ValueStack.Depth-2].val);
-                Compiler.EmitCode("ldc.i4 0");
-                Compiler.EmitCode("stloc b{0}", ValueStack[ValueStack.Depth-2].val);
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != ValueStack[ValueStack.Depth-2].val))
+                {
+                    Compiler.EmitCode(".locals init ( int32 {0} )", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.symbolTable.Add(ValueStack[ValueStack.Depth-2].val, "bool");
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  variable already declared!", lineno);
+                    Compiler.errors++;
+                }
             }
 #line default
         break;
       case 35: // Anon@5 -> /* empty */
-#line 155 "kompilator.y"
-               {
+#line 178 "kompilator.y"
+            {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Write: {0}\"");
-               }
+            }
 #line default
         break;
       case 36: // write -> Write, Anon@5, exp, Semicolon
-#line 160 "kompilator.y"
-               {
+#line 183 "kompilator.y"
+            {
                Compiler.EmitCode("box [mscorlib]System.{0}",ValueStack[ValueStack.Depth-2].type=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",ValueStack[ValueStack.Depth-2].type=='i'?"i":"r");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
                Compiler.EmitCode("");
-               }
+            }
 #line default
         break;
       case 37: // assign -> Ident, Assign, exp, Semicolon
-#line 168 "kompilator.y"
+#line 191 "kompilator.y"
+            {
+               if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-4].val)) 
                {
-               if ( ValueStack[ValueStack.Depth-4].val[0]=='@' && ValueStack[ValueStack.Depth-2].type!='i' )
-                   {
-                   Console.WriteLine("  line {0,3}:  semantic error - cannot convert real to int",lineno);
-                   ++Compiler.errors;
-                   }
-               else
-                   {
-                   if ( ValueStack[ValueStack.Depth-4].val[0]=='$' && ValueStack[ValueStack.Depth-2].type!='r' )
-                       Compiler.EmitCode("conv.r8");
-
-                    Compiler.EmitCode("stloc i{0}", ValueStack[ValueStack.Depth-4].val);
-                   //Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
-                   Compiler.EmitCode("");
-                   }
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
                }
+               else
+               {
+                    if (Compiler.symbolTable[ValueStack[ValueStack.Depth-4].val]=="int" && ValueStack[ValueStack.Depth-2].type != 'i')
+                    {
+                        Console.WriteLine("line {0,3}:  semantic error - cannot convert double to int",lineno);
+                        ++Compiler.errors;
+                    }   
+                    else
+                    {
+                        Compiler.EmitCode("stloc {0}", ValueStack[ValueStack.Depth-4].val);
+                    }
+               }
+            }
 #line default
         break;
       case 38: // exp -> exp, Plus, term
-#line 186 "kompilator.y"
+#line 211 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Plus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 39: // exp -> exp, Minus, term
-#line 188 "kompilator.y"
+#line 213 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Minus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 40: // exp -> term
-#line 190 "kompilator.y"
+#line 215 "kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 41: // term -> term, Multiplies, factor
-#line 194 "kompilator.y"
+#line 219 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Multiplies, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 42: // term -> term, Divides, factor
-#line 196 "kompilator.y"
+#line 221 "kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Divides, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type); }
 #line default
         break;
       case 43: // term -> factor
-#line 198 "kompilator.y"
+#line 223 "kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 44: // factor -> OpenPar, exp, ClosePar
-#line 202 "kompilator.y"
+#line 227 "kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-2].type; }
 #line default
         break;
       case 45: // factor -> IntNumber
-#line 204 "kompilator.y"
-               {
+#line 229 "kompilator.y"
+          {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse(ValueStack[ValueStack.Depth-1].val));
                CurrentSemanticValue.type = 'i'; 
-               }
+          }
 #line default
         break;
       case 46: // factor -> RealNumber
-#line 209 "kompilator.y"
-               {
+#line 234 "kompilator.y"
+          {
                double d = double.Parse(ValueStack[ValueStack.Depth-1].val,System.Globalization.CultureInfo.InvariantCulture) ;
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
-               CurrentSemanticValue.type = 'r'; 
-               }
+               CurrentSemanticValue.type = 'd'; 
+          }
 #line default
         break;
       case 47: // factor -> Ident
-#line 215 "kompilator.y"
-               {
-               Compiler.EmitCode("ldloc i{0}", ValueStack[ValueStack.Depth-1].val);
-               CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].val[0]=='@'?'i':'r';
-               }
+#line 240 "kompilator.y"
+          {
+               Compiler.EmitCode("ldloc {0}", ValueStack[ValueStack.Depth-1].val);
+               CurrentSemanticValue.type = Compiler.symbolTable[ValueStack[ValueStack.Depth-1].val] == "int" ? 'i' : 'd';
+          }
 #line default
         break;
     }
@@ -503,7 +528,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
         return CharToString((char)terminal);
   }
 
-#line 222 "kompilator.y"
+#line 247 "kompilator.y"
 
 int lineno = 1;
 string temp;
@@ -521,8 +546,8 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
         Compiler.EmitCode("conv.r8");
         Compiler.EmitCode("ldloc temp");
         }
-   // if ( type2!=type )
-   //     Compiler.EmitCode("conv.r8");
+    if ( type2!=type )
+        Compiler.EmitCode("conv.r8");
     switch ( t )
         {
         case Tokens.Plus:

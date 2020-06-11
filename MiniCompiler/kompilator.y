@@ -23,13 +23,13 @@ public char    type;
 
 %%
 start    : Program OpenBracket code CloseBracket 
-                {
+           {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
                Compiler.EmitCode("");
                YYACCEPT;
-               }
+           }
                Eof 
            ;
 code     : code stat { ++lineno; }
@@ -37,18 +37,18 @@ code     : code stat { ++lineno; }
           ;
 stat      : write | assign | declare | while | block | cond
           | error
-               {
+          {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
                ++Compiler.errors;
                yyerrok();
-               }
+          }
           | error Eof
-               {
+          {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
                ++Compiler.errors;
                yyerrok();
                YYACCEPT;
-               }
+          }
           ;
 block     : OpenBracket code CloseBracket
           ;
@@ -135,53 +135,78 @@ bool      : exp Equal exp
           ; 
 declare   : Int Ident Semicolon
             {
-                Compiler.EmitCode(".locals init ( int32 i{0} )", $2);
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
+                {
+                    Compiler.EmitCode(".locals init ( int32 {0} )", $2);
+                    Compiler.symbolTable.Add($2, "int");
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  variable already declared!", lineno);
+                    Compiler.errors++;
+                }
 
             }
             | Double Ident Semicolon
             {
-                Compiler.EmitCode(".locals init ( float64 f{0} )", $2);
-                Compiler.EmitCode("ldc.r8 0");
-                Compiler.EmitCode("stloc f{0}", $2);
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
+                {
+                    Compiler.EmitCode(".locals init ( float64 {0} )", $2);
+                    Compiler.symbolTable.Add($2, "double");
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  variable already declared!", lineno);
+                    Compiler.errors++;
+                }
             }
             | Bool Ident Semicolon
             {
-                Compiler.EmitCode(".locals init ( int32 b{0} )", $2);
-                Compiler.EmitCode("ldc.i4 0");
-                Compiler.EmitCode("stloc b{0}", $2);
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
+                {
+                    Compiler.EmitCode(".locals init ( int32 {0} )", $2);
+                    Compiler.symbolTable.Add($2, "bool");
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  variable already declared!", lineno);
+                    Compiler.errors++;
+                }
             }
             ;
 write     : Write
-               {
+            {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Write: {0}\"");
-               }
+            }
             exp Semicolon
-               {
+            {
                Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
                Compiler.EmitCode("");
-               }
+            }
           ;
 assign    : Ident Assign exp Semicolon
+            {
+               if (!Compiler.symbolTable.ContainsKey($1)) 
                {
-               if ( $1[0]=='@' && $3!='i' )
-                   {
-                   Console.WriteLine("  line {0,3}:  semantic error - cannot convert real to int",lineno);
-                   ++Compiler.errors;
-                   }
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
+               }
                else
-                   {
-                   if ( $1[0]=='$' && $3!='r' )
-                       Compiler.EmitCode("conv.r8");
-
-                    Compiler.EmitCode("stloc i{0}", $1);
-                   //Compiler.EmitCode("stloc _{0}{1}", $1[0]=='@'?'i':'r', $1[1]);
-                   Compiler.EmitCode("");
-                   }
-               } 
-               ;
+               {
+                    if (Compiler.symbolTable[$1]=="int" && $3 != 'i')
+                    {
+                        Console.WriteLine("line {0,3}:  semantic error - cannot convert double to int",lineno);
+                        ++Compiler.errors;
+                    }   
+                    else
+                    {
+                        Compiler.EmitCode("stloc {0}", $1);
+                    }
+               }
+            } 
+          ;
 exp       : exp Plus term
                { $$ = BinaryOpGenCode(Tokens.Plus, $1, $3); }
           | exp Minus term
@@ -201,21 +226,21 @@ term      : term Multiplies factor
 factor    : OpenPar exp ClosePar
                { $$ = $2; }
           | IntNumber
-               {
+          {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($1));
                $$ = 'i'; 
-               }
+          }
           | RealNumber
-               {
+          {
                double d = double.Parse($1,System.Globalization.CultureInfo.InvariantCulture) ;
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
-               $$ = 'r'; 
-               }
+               $$ = 'd'; 
+          }
           | Ident
-               {
-               Compiler.EmitCode("ldloc i{0}", $1);
-               $$ = $1[0]=='@'?'i':'r';
-               }
+          {
+               Compiler.EmitCode("ldloc {0}", $1);
+               $$ = Compiler.symbolTable[$1] == "int" ? 'i' : 'd';
+          }
           ;
 
 %%
@@ -236,8 +261,8 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
         Compiler.EmitCode("conv.r8");
         Compiler.EmitCode("ldloc temp");
         }
-   // if ( type2!=type )
-   //     Compiler.EmitCode("conv.r8");
+    if ( type2!=type )
+        Compiler.EmitCode("conv.r8");
     switch ( t )
         {
         case Tokens.Plus:
