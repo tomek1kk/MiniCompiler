@@ -1,10 +1,10 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <kompilator.y - 11.06.2020 17:08:27>
+//  GPPG error listing for yacc source file <kompilator.y - 11.06.2020 20:13:42>
 // ==========================================================================
 //  Version:  1.5.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 11.06.2020 17:08:31
+//  DateTime: 11.06.2020 20:13:53
 //  UserName: tomek
 // ==========================================================================
 
@@ -28,7 +28,7 @@ public char    type;
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar
 %token Equal NotEqual Greater GreaterEqual Less LessEqual
-%token <val> Ident IntNumber RealNumber
+%token <val> Ident IntNumber RealNumber String
 
 %type <type> code stat exp term factor declare bool cond while
 
@@ -142,7 +142,33 @@ bool      : exp Equal exp
             {
             }
             | True 
+            {
+                Compiler.EmitCode("ldc.i4 1"); 
+            }
             | False
+            {
+                Compiler.EmitCode("ldc.i4 0");
+            }
+            | Ident
+            {
+                if (Compiler.symbolTable.ContainsKey($1))
+                {
+                    if (Compiler.symbolTable[$1] == "bool")
+                    {
+                        Compiler.EmitCode("ldloc {0}", $1);
+                    }
+                    else
+                    {
+                        Console.WriteLine("line {0,3}:  only bool variables can be used that way", lineno);
+                        Compiler.errors++;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  use of undeclared variable!", lineno);
+                    Compiler.errors++;
+                }
+            }
           ; 
 declare   : Int Ident Semicolon
             {
@@ -187,7 +213,6 @@ declare   : Int Ident Semicolon
             ;
 write     : Write
             {
-               //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"  Write: {0}\"");
             }
             exp Semicolon
@@ -197,26 +222,42 @@ write     : Write
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string,object,object)");
                Compiler.EmitCode("");
             }
+            | Write
+            String Semicolon
+            {
+                Compiler.EmitCode("ldstr " Write: {0}", $2);
+//---------------------------------------------------------^^
+// Error: Literal string terminated by EOL
+// Error: Literal string terminated by end of line
+// Error: Literal string terminated by end of line
+// Error: Literal string terminated by end of line
+// -----------------------------------------------
+                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string, strin)");
+            }
           ;
 assign    : Ident Assign exp Semicolon
             {
-               if (!Compiler.symbolTable.Contains($1)) 
+               if (!Compiler.symbolTable.ContainsKey($1)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
                }
                else
                {
-                    if (Compiler.symbolTable[$1]=='int' && $3 != 'int')
-//-----------------------------------------------^^--^^---------^^--^^
-// Error: This character is invalid in this context
-// Error: This character is invalid in this context
-// Error: This character is invalid in this context
-// Error: This character is invalid in this context
-// ------------------------------------------------
+                    if (Compiler.symbolTable[$1]=="int" && $3 != 'i')
                     {
-                        Console.WriteLine("  line {0,3}:  semantic error - cannot convert double to int",lineno);
+                        Console.WriteLine("line {0,3}:  semantic error - cannot convert to int (use convert operator)",lineno);
                         ++Compiler.errors;
-                    }   
+                    } 
+                    else if (Compiler.symbolTable[$1]=="double" && $3 != 'd' && $3 != 'i')
+                    {
+                        Console.WriteLine("line {0,3}:  semantic error - cannot convert to double (use convert operator)",lineno);
+                        ++Compiler.errors;
+                    }
+                    else if (Compiler.symbolTable[$1]=="bool" && $3 != 'b')
+                    {
+                        Console.WriteLine("line {0,3}:  semantic error - cannot convert to bool (use convert operator)",lineno);
+                        ++Compiler.errors;
+                    }
                     else
                     {
                         Compiler.EmitCode("stloc {0}", $1);
@@ -245,26 +286,43 @@ factor    : OpenPar exp ClosePar
           | IntNumber
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($1));
-               $$ = 'int'; 
-//-----------------^^--^^
-// Error: This character is invalid in this context
-// Error: This character is invalid in this context
-// ------------------------------------------------
+               $$ = 'i'; 
           }
           | RealNumber
           {
                double d = double.Parse($1,System.Globalization.CultureInfo.InvariantCulture) ;
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
-               $$ = 'double'; 
-//-----------------^^-----^^
-// Error: This character is invalid in this context
-// Error: This character is invalid in this context
-// ------------------------------------------------
+               $$ = 'd'; 
+          }
+          | True
+          {
+                Compiler.EmitCode("ldc.i4 1");
+                $$ = 'b';
+          }
+          | False
+          {
+                Compiler.EmitCode("ldc.i4 0");
+                $$ = 'b';
           }
           | Ident
           {
                Compiler.EmitCode("ldloc {0}", $1);
-               $$ = Compiler.symbolTable[$1];
+               switch(Compiler.symbolTable[$1])
+               {
+                    case "int":
+                        $$ = 'i';
+                        break;
+                    case "double":
+                        $$ = 'd';
+                        break;
+                    case "bool":
+                        $$ = 'b';
+                        break;
+                    default:
+                        Console.WriteLine("line {0,3}:  unrecognized type",lineno);
+                        Compiler.errors++;
+                        break;
+               }
           }
           ;
 

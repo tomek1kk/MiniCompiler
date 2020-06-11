@@ -5,6 +5,7 @@
 IntNumber   ([1-9][0-9]*)|0
 RealNumber  ([1-9][0-9]*\.[0-9]+)|(0\.[0-9]+)
 Ident		([a-zA-Z])[0-9a-zA-Z]*
+String      \".*\"
 PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 
 %%
@@ -23,6 +24,7 @@ PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 {IntNumber}   { yylval.val=yytext; return (int)Tokens.IntNumber; }
 {RealNumber}  { yylval.val=yytext; return (int)Tokens.RealNumber; }
 {Ident}       { yylval.val=yytext; return (int)Tokens.Ident; }
+{String}      { yylval.val=yytext; return (int)Tokens.String; }
 "="           { return (int)Tokens.Assign; }
 "+"           { return (int)Tokens.Plus; }
 "-"           { return (int)Tokens.Minus; }
