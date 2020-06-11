@@ -56,43 +56,54 @@ cond      : ifelse | if
           ;
 while     : While
             { 
-                temp = Compiler.NewTemp();
-                Compiler.EmitCode("{0}:", temp);
+                deeplevel++;
+                if (deeplevel == 1)
+                    temp = Compiler.NewTemp();
+                Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
             }
             OpenPar bool ClosePar 
             { 
-                temp2 = Compiler.NewTemp();
-                Compiler.EmitCode("brfalse {0}", temp2); 
+                if (deeplevel == 1)
+                    temp2 = Compiler.NewTemp();
+                Compiler.EmitCode("brfalse {0}", temp2 + "_" + deeplevel.ToString()); 
             }
             stat
             { 
-                Compiler.EmitCode("br {0}", temp);
-                Compiler.EmitCode("{0}:", temp2);
+                Compiler.EmitCode("br {0}", temp + "_" + deeplevel.ToString());
+                Compiler.EmitCode("{0}:", temp2 + "_" + deeplevel.ToString());
+                deeplevel--;
             }
           ;
 ifhead     : If OpenPar bool ClosePar
             {
-                temp = Compiler.NewTemp();
-                Compiler.EmitCode("brfalse {0}", temp);
+                deeplevel++;
+                if (deeplevel == 1)
+                    temp = Compiler.NewTemp();
+                Compiler.EmitCode("brfalse {0}", temp + "_" + deeplevel.ToString());
             }
             ;
 if        : ifhead
             stat
             { 
-                Compiler.EmitCode("{0}:", temp);
+                
+                Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
+                deeplevel--;
             }
           ;
 ifelse    : ifhead
             stat
             Else
             {
-                temp2 = Compiler.NewTemp();
-                Compiler.EmitCode("br {0}", temp2);
-                Compiler.EmitCode("{0}:", temp);
+               
+                if (deeplevel == 1)
+                    temp2 = Compiler.NewTemp();
+                Compiler.EmitCode("br {0}", temp2 + "_" + deeplevel.ToString());
+                Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
             }
             stat
             {
-                Compiler.EmitCode("{0}:", temp2);
+                Compiler.EmitCode("{0}:", temp2 + "_" + deeplevel.ToString());
+                deeplevel--;
             }
             ;
 bool      : exp Equal exp 
@@ -209,10 +220,10 @@ factor    : OpenPar exp ClosePar
 
 %%
 
-int lineno=1;
+int lineno = 1;
 string temp;
 string temp2;
-int whilecounter=1;
+int deeplevel = 0;
 
 public Parser(Scanner scanner) : base(scanner) { }
 
