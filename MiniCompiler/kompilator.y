@@ -16,7 +16,7 @@ public char    type;
 %token Int Double Bool
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar
-%token Equal NotEqual Greater GreaterEqual Less LessEqual
+%token Equal NotEqual Greater GreaterEqual Less LessEqual And Or
 %token <val> Ident IntNumber RealNumber String
 
 %type <type> code stat exp term factor declare bool cond while
@@ -61,7 +61,7 @@ while     : While
                     temp = Compiler.NewTemp();
                 Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
             }
-            OpenPar bool ClosePar 
+            OpenPar fullbool ClosePar 
             { 
                 if (deeplevel == 1)
                     temp2 = Compiler.NewTemp();
@@ -74,7 +74,7 @@ while     : While
                 deeplevel--;
             }
           ;
-ifhead     : If OpenPar bool ClosePar
+ifhead     : If OpenPar fullbool ClosePar
             {
                 deeplevel++;
                 if (deeplevel == 1)
@@ -105,6 +105,17 @@ ifelse    : ifhead
                 Compiler.EmitCode("{0}:", temp2 + "_" + deeplevel.ToString());
                 deeplevel--;
             }
+            ;
+fullbool  : fullbool And bool
+            {
+                 Compiler.EmitCode("and");
+            }
+            | fullbool Or bool
+            {
+                 Compiler.EmitCode("or");
+            }
+            | OpenPar fullbool ClosePar
+            | bool
             ;
 bool      : exp Equal exp 
             {
