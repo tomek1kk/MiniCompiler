@@ -9,17 +9,17 @@ public string  val;
 public char    type;
 }
 
-%token Assign Plus Minus Multiplies Divides 
+%token Assign Plus Minus Multiplies Divides SumLog IlLog
 %token Program Return Eof Error 
 %token If Else While
 %token Read Write
 %token Int Double Bool
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar
-%token Equal NotEqual Greater GreaterEqual Less LessEqual And Or
+%token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
 %token <val> Ident IntNumber RealNumber String
 
-%type <type> code stat exp term factor declare bool cond while
+%type <type> code stat exp term factor declare bool cond while log
 
 %%
 start    : Program OpenBracket code CloseBracket 
@@ -116,6 +116,11 @@ fullbool  : fullbool And bool
             }
             | OpenPar fullbool ClosePar
             | bool
+            | Exclamation OpenPar fullbool ClosePar
+            {
+                    Compiler.EmitCode("ldc.i4 1");
+                    Compiler.EmitCode("sub");
+            }
             ;
 bool      : exp Equal exp 
             {
@@ -160,6 +165,28 @@ bool      : exp Equal exp
                     else
                     {
                         Console.WriteLine("line {0,3}:  only bool variables can be used that way", lineno);
+                        Compiler.errors++;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  use of undeclared variable!", lineno);
+                    Compiler.errors++;
+                }
+            }
+            | Exclamation Ident
+            {
+                if (Compiler.symbolTable.ContainsKey($2))
+                {
+                    if (Compiler.symbolTable[$2] == "bool")
+                    {
+                        Compiler.EmitCode("ldloc {0}", $2);
+                        Compiler.EmitCode("ldc.i4 1");
+                        Compiler.EmitCode("sub");
+                    }
+                    else
+                    {
+                        Console.WriteLine("line {0,3}:  only bool variables can be used with !", lineno);
                         Compiler.errors++;
                     }
                 }
@@ -266,16 +293,32 @@ exp       : exp Plus term
                { $$ = $1; }
           ;
 
-term      : term Multiplies factor
+term      : term Multiplies log
                { $$ = BinaryOpGenCode(Tokens.Multiplies, $1, $3); }
-          | term Divides factor
+          | term Divides log
                { $$ = BinaryOpGenCode(Tokens.Divides, $1, $3); }
+          | log
+               { $$ = $1; }
+          ;
+log       : log SumLog log
+               { $$ = BinaryOpGenCode(Tokens.SumLog, $1, $3); }
+          | log IlLog log
+               { $$ = BinaryOpGenCode(Tokens.IlLog, $1, $3); }
           | factor
                { $$ = $1; }
           ;
-
 factor    : OpenPar exp ClosePar
                { $$ = $2; }
+          | Minus OpenPar exp ClosePar
+          {
+            $$ = $3;
+            Compiler.EmitCode("neg");
+          }
+          | Neg OpenPar exp ClosePar
+          {
+            $$ = $3;
+            Compiler.EmitCode("not");
+          }
           | IntNumber
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($1));
@@ -283,22 +326,36 @@ factor    : OpenPar exp ClosePar
           }
           | RealNumber
           {
-               double d = double.Parse($1,System.Globalization.CultureInfo.InvariantCulture) ;
+               double d = double.Parse($1,System.Globalization.CultureInfo.InvariantCulture);
+               Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
+               $$ = 'd'; 
+          }
+          | Minus IntNumber
+          {
+               Compiler.EmitCode("ldc.i4 {0}",int.Parse($2) * -1);
+               $$ = 'i'; 
+          }
+          | Minus RealNumber
+          {
+               double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture) * -1;
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
                $$ = 'd'; 
           }
           | True
           {
+                neg=1;
                 Compiler.EmitCode("ldc.i4 1");
                 $$ = 'b';
           }
           | False
           {
+                neg=1;
                 Compiler.EmitCode("ldc.i4 0");
                 $$ = 'b';
           }
           | Ident
           {
+
                Compiler.EmitCode("ldloc {0}", $1);
                switch(Compiler.symbolTable[$1])
                {
@@ -317,11 +374,64 @@ factor    : OpenPar exp ClosePar
                         break;
                }
           }
+          | Minus Ident
+          {
+               if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
+               {
+                    Console.WriteLine("line {0,3}: cannot use - operator to bool variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                   Compiler.EmitCode("ldloc {0}", $2);
+                   Compiler.EmitCode("neg");
+                   switch(Compiler.symbolTable[$2])
+                   {
+                        case "int":
+                            $$ = 'i';
+                            break;
+                        case "double":
+                            $$ = 'd';
+                            break;
+                        default:
+                            Console.WriteLine("line {0,3}:  unrecognized type",lineno);
+                            Compiler.errors++;
+                            break;
+                   }
+               }
+          }
+           | Neg Ident
+          {
+               if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
+               {
+                    Console.WriteLine("line {0,3}: cannot use ~ operator to bool variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                   Compiler.EmitCode("ldloc {0}", $2);
+                   Compiler.EmitCode("not");
+                   switch(Compiler.symbolTable[$2])
+                   {
+                        case "int":
+                            $$ = 'i';
+                            break;
+                        case "double":
+                            $$ = 'd';
+                            break;
+                        default:
+                            Console.WriteLine("line {0,3}:  unrecognized type",lineno);
+                            Compiler.errors++;
+                            break;
+                   }
+               }
+          }
           ;
 
 %%
 
 int lineno = 1;
+int neg = 1;
 string temp;
 string temp2;
 int deeplevel = 0;
@@ -352,6 +462,12 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
             break;
         case Tokens.Divides:
             Compiler.EmitCode("div");
+            break;
+        case Tokens.SumLog:
+            Compiler.EmitCode("or");
+            break;
+        case Tokens.IlLog:
+            Compiler.EmitCode("and");
             break;
         default:
             Console.WriteLine($"  line {lineno,3}:  internal gencode error");

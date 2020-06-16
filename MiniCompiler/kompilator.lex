@@ -43,7 +43,11 @@ Comment     "//".*
 "<"			  { return (int)Tokens.Less; }
 "<="		  { return (int)Tokens.LessEqual; }
 "&&"		  { return (int)Tokens.And; }
+"!"		      { return (int)Tokens.Exclamation; }
 "||"		  { return (int)Tokens.Or; }
+"~"			  { return (int)Tokens.Neg; }
+"|"			  { return (int)Tokens.SumLog; }
+"&"			  { return (int)Tokens.IlLog; }
 "\r"          { }
 <<EOF>>       { return (int)Tokens.Eof; }
 " "           { }
