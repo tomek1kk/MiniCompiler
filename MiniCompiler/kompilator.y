@@ -137,14 +137,19 @@ bool      : exp Equal exp
             }
             | exp GreaterEqual exp
             {
-                
+                Compiler.EmitCode("ldc.i4 1");
+                Compiler.EmitCode("sub");
+                Compiler.EmitCode("cgt");
             }
             | exp Less exp
             {
                 Compiler.EmitCode("clt");
             }
-            | exp LessEqual
+            | exp LessEqual exp
             {
+                Compiler.EmitCode("ldc.i4 1");
+                Compiler.EmitCode("add");
+                Compiler.EmitCode("clt");
             }
             | True 
             {
