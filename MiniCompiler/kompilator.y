@@ -13,7 +13,7 @@ public char    type;
 %token Program Return Eof Error 
 %token If Else While
 %token Read Write
-%token Int Double Bool
+%token Int Double Bool IntConv DoubleConv
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar Return
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
@@ -346,6 +346,19 @@ factor    : OpenPar exp ClosePar
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($2) * -1);
                $$ = 'i'; 
           }
+          | DoubleConv IntNumber
+          {
+            Compiler.EmitCode("ldc.i4 {0}",int.Parse($2));
+            Compiler.EmitCode("conv.r8");
+            $$ = 'd';
+          }
+          | IntConv RealNumber
+          {
+            double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture);
+            Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
+            Compiler.EmitCode("conv.i4");
+            $$ = 'i';
+          }
           | Minus RealNumber
           {
                double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture) * -1;
@@ -409,6 +422,34 @@ factor    : OpenPar exp ClosePar
                             Compiler.errors++;
                             break;
                    }
+               }
+          }
+          | IntConv Ident
+          {
+               if (Compiler.symbolTable[$2] != "double")
+               {
+                    Console.WriteLine("line {0,3}: cannot use (int) operator to non double variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                   Compiler.EmitCode("ldloc {0}", $2);
+                   Compiler.EmitCode("conv.i4");
+                   $$ = 'i';
+               }
+          }
+          | DoubleConv Ident
+          {
+               if (Compiler.symbolTable[$2] != "int")
+               {
+                    Console.WriteLine("line {0,3}: cannot use (double) operator to non int variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                   Compiler.EmitCode("ldloc {0}", $2);
+                   Compiler.EmitCode("conv.r8");
+                   $$ = 'd';
                }
           }
            | Neg Ident

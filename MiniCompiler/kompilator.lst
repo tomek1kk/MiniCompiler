@@ -1,10 +1,10 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <kompilator.y - 17.06.2020 18:52:34>
+//  GPPG error listing for yacc source file <kompilator.y - 17.06.2020 19:20:24>
 // ==========================================================================
 //  Version:  1.5.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 17.06.2020 18:52:40
+//  DateTime: 17.06.2020 19:20:30
 //  UserName: tomek
 // ==========================================================================
 
@@ -24,7 +24,7 @@ public char    type;
 %token Program Return Eof Error 
 %token If Else While
 %token Read Write
-%token Int Double Bool
+%token Int Double Bool IntConv DoubleConv
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar Return
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
@@ -33,8 +33,15 @@ public char    type;
 %type <type> code stat exp term factor declare bool cond while log
 
 %%
-// Warning: NonTerminal symbol "return" is unreachable
-// ---------------------------------------------------
+// Error: There are 2 non-terminating NonTerminal Symbols
+   //  {ConvInt, ConvDouble}
+// Warning: Terminating ConvInt fixes the following size-1 NonTerminal set
+   // {ConvInt}
+// Warning: Terminating ConvDouble fixes the following size-1 NonTerminal set
+   // {ConvDouble}
+// Error: NonTerminal symbol "ConvInt" has no productions
+// Error: NonTerminal symbol "ConvDouble" has no productions
+// --------------------------------------------------------------------------
 start    : Program OpenBracket code CloseBracket 
            {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
@@ -50,10 +57,11 @@ code     : code stat { ++lineno; }
           ;
 return   : Return Semicolon
           {
-            YYACCEPT;
+            Compiler.EmitCode("ldc.i4 0");
+            Compiler.EmitCode("leave EndMain");
           }
           ;
-stat      : write | assign | declare | while | block | cond
+stat      : write | assign | declare | while | block | cond | return
           | error
           {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -358,6 +366,16 @@ factor    : OpenPar exp ClosePar
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($2) * -1);
                $$ = 'i'; 
           }
+          | DoubleConv IntNumber
+          {
+            Compiler.EmitCode("conv.r8");
+            $$ = 'd';
+          }
+          | IntConv RealNumber
+          {
+            Compiler.EmitCode("conv.i4");
+            $$ = 'i';
+          }
           | Minus RealNumber
           {
                double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture) * -1;
@@ -421,6 +439,32 @@ factor    : OpenPar exp ClosePar
                             Compiler.errors++;
                             break;
                    }
+               }
+          }
+          | ConvInt Ident
+          {
+               if (Compiler.symbolTable[$2] != "double")
+               {
+                    Console.WriteLine("line {0,3}: cannot use (int) operator to non double variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                   Compiler.EmitCode("conv.i4");
+                   $$ = 'i';
+               }
+          }
+          | ConvDouble Ident
+          {
+               if (Compiler.symbolTable[$2] != "int")
+               {
+                    Console.WriteLine("line {0,3}: cannot use (double) operator to non int variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                   Compiler.EmitCode("conv.r8");
+                   $$ = 'd';
                }
           }
            | Neg Ident

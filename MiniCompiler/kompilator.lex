@@ -48,6 +48,8 @@ Comment     "//".*
 "~"			  { return (int)Tokens.Neg; }
 "|"			  { return (int)Tokens.SumLog; }
 "&"			  { return (int)Tokens.IlLog; }
+"(int)"		  { return (int)Tokens.IntConv; }
+"(double)"    { return (int)Tokens.DoubleConv; }
 "\r"          { }
 <<EOF>>       { return (int)Tokens.Eof; }
 " "           { }
