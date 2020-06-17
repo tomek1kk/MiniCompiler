@@ -15,7 +15,7 @@ public char    type;
 %token Read Write
 %token Int Double Bool
 %token True False
-%token OpenBracket CloseBracket Semicolon OpenPar ClosePar
+%token OpenBracket CloseBracket Semicolon OpenPar ClosePar Return
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
 %token <val> Ident IntNumber RealNumber String
 
@@ -27,7 +27,7 @@ start    : Program OpenBracket code CloseBracket
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
                Compiler.EmitCode("ldstr \"\\nEnd of execution\\n\"");
                Compiler.EmitCode("call void [mscorlib]System.Console::WriteLine(string)");
-               Compiler.EmitCode("");
+               Compiler.EmitCode("ldc.i4 0");
                YYACCEPT;
            }
                Eof 
@@ -35,7 +35,13 @@ start    : Program OpenBracket code CloseBracket
 code     : code stat { ++lineno; }
           | stat { ++lineno; }
           ;
-stat      : write | assign | declare | while | block | cond
+return   : Return Semicolon
+          {
+            Compiler.EmitCode("ldc.i4 0");
+            Compiler.EmitCode("leave EndMain");
+          }
+          ;
+stat      : write | assign | declare | while | block | cond | return
           | error
           {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
