@@ -1,10 +1,10 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <kompilator.y - 17.06.2020 19:20:24>
+//  GPPG error listing for yacc source file <kompilator.y - 18.06.2020 00:46:40>
 // ==========================================================================
 //  Version:  1.5.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 17.06.2020 19:20:30
+//  DateTime: 18.06.2020 00:46:55
 //  UserName: tomek
 // ==========================================================================
 
@@ -33,15 +33,8 @@ public char    type;
 %type <type> code stat exp term factor declare bool cond while log
 
 %%
-// Error: There are 2 non-terminating NonTerminal Symbols
-   //  {ConvInt, ConvDouble}
-// Warning: Terminating ConvInt fixes the following size-1 NonTerminal set
-   // {ConvInt}
-// Warning: Terminating ConvDouble fixes the following size-1 NonTerminal set
-   // {ConvDouble}
-// Error: NonTerminal symbol "ConvInt" has no productions
-// Error: NonTerminal symbol "ConvDouble" has no productions
-// --------------------------------------------------------------------------
+// Warning: NonTerminal symbol "read" is unreachable
+// -------------------------------------------------
 start    : Program OpenBracket code CloseBracket 
            {
                //Compiler.EmitCode("// linia {0,3} :  "+Compiler.source[lineno-1],lineno);
@@ -286,11 +279,38 @@ write     : Write
                 Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
             }
           ;
+read      : Read Ident Semicolon
+            {
+               if (!Compiler.symbolTable.ContainsKey($2)) 
+               {
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                    Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
+                    if (Compiler.symbolTable[$2] == 'b')
+                    {
+                    
+                    }
+                    else if (Compiler.symbolTable[$2] == 'd')
+                    {
+                        Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
+                    }
+                    else
+                    {
+                       Compiler.EmitCode("call float64 [mscorlib]System.Double::Parse(string)");
+                    }
+                    Compiler.EmitCode("stloc {0}", $2);
+               }
+            }
+          ;
 assign    : Ident Assign exp Semicolon
             {
                if (!Compiler.symbolTable.ContainsKey($1)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
+                    Compiler.errors++;
                }
                else
                {
@@ -350,6 +370,32 @@ factor    : OpenPar exp ClosePar
             $$ = $3;
             Compiler.EmitCode("not");
           }
+          | IntConv OpenPar exp ClosePar
+          {
+            if ($3 == 'd')
+            {
+                $$ = 'i';
+                Compiler.EmitCode("conv.i4");
+            }
+            else
+            {
+                 Console.WriteLine("line {0,3}:  expression must be double to use (int) convertion",lineno);
+                 Compiler.errors++;
+            }
+          }
+          | DoubleConv OpenPar exp ClosePar
+          {
+            if ($3 == 'i')
+            {
+                $$ = 'd';
+                Compiler.EmitCode("conv.r8");
+            }
+            else
+            {
+                 Console.WriteLine("line {0,3}:  expression must be int to use (double) convertion",lineno);
+                 Compiler.errors++;
+            }
+          }
           | IntNumber
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($1));
@@ -368,11 +414,14 @@ factor    : OpenPar exp ClosePar
           }
           | DoubleConv IntNumber
           {
+            Compiler.EmitCode("ldc.i4 {0}",int.Parse($2));
             Compiler.EmitCode("conv.r8");
             $$ = 'd';
           }
           | IntConv RealNumber
           {
+            double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture);
+            Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
             Compiler.EmitCode("conv.i4");
             $$ = 'i';
           }
@@ -441,7 +490,7 @@ factor    : OpenPar exp ClosePar
                    }
                }
           }
-          | ConvInt Ident
+          | IntConv Ident
           {
                if (Compiler.symbolTable[$2] != "double")
                {
@@ -450,11 +499,12 @@ factor    : OpenPar exp ClosePar
                }
                else
                {
+                   Compiler.EmitCode("ldloc {0}", $2);
                    Compiler.EmitCode("conv.i4");
                    $$ = 'i';
                }
           }
-          | ConvDouble Ident
+          | DoubleConv Ident
           {
                if (Compiler.symbolTable[$2] != "int")
                {
@@ -463,6 +513,7 @@ factor    : OpenPar exp ClosePar
                }
                else
                {
+                   Compiler.EmitCode("ldloc {0}", $2);
                    Compiler.EmitCode("conv.r8");
                    $$ = 'd';
                }

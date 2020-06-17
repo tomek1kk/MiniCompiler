@@ -41,7 +41,7 @@ return   : Return Semicolon
             Compiler.EmitCode("leave EndMain");
           }
           ;
-stat      : write | assign | declare | while | block | cond | return
+stat      : write | assign | declare | while | block | cond | return | read
           | error
           {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
@@ -266,11 +266,38 @@ write     : Write
                 Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
             }
           ;
+read      : Read Ident Semicolon
+            {
+               if (!Compiler.symbolTable.ContainsKey($2)) 
+               {
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
+                    Compiler.errors++;
+               }
+               else
+               {
+                    Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
+                    if (Compiler.symbolTable[$2] == "bool")
+                    {
+                        // todo
+                    }
+                    else if (Compiler.symbolTable[$2] == "int")
+                    {
+                        Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
+                    }
+                    else
+                    {
+                       Compiler.EmitCode("call float64 [mscorlib]System.Double::Parse(string)");
+                    }
+                    Compiler.EmitCode("stloc {0}", $2);
+               }
+            }
+          ;
 assign    : Ident Assign exp Semicolon
             {
                if (!Compiler.symbolTable.ContainsKey($1)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", lineno);
+                    Compiler.errors++;
                }
                else
                {
