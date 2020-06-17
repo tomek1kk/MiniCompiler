@@ -330,6 +330,32 @@ factor    : OpenPar exp ClosePar
             $$ = $3;
             Compiler.EmitCode("not");
           }
+          | IntConv OpenPar exp ClosePar
+          {
+            if ($3 == 'd')
+            {
+                $$ = 'i';
+                Compiler.EmitCode("conv.i4");
+            }
+            else
+            {
+                 Console.WriteLine("line {0,3}:  expression must be double to use (int) convertion",lineno);
+                 Compiler.errors++;
+            }
+          }
+          | DoubleConv OpenPar exp ClosePar
+          {
+            if ($3 == 'i')
+            {
+                $$ = 'd';
+                Compiler.EmitCode("conv.r8");
+            }
+            else
+            {
+                 Console.WriteLine("line {0,3}:  expression must be int to use (double) convertion",lineno);
+                 Compiler.errors++;
+            }
+          }
           | IntNumber
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse($1));
