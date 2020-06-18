@@ -103,6 +103,7 @@ public class Compiler
 
         EmitCode("// prolog");
         EmitCode(".locals init ( float64 temp )");
+        EmitCode(".locals init ( string temp2 )");
         //for ( char c='a' ; c<='z' ; ++c )
         //    {
         //    EmitCode($".locals init ( int32 _i{c} )");

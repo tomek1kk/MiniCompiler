@@ -6,9 +6,9 @@
 //
 //  GPLEX Version:  1.2.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 18.06.2020 00:51:55
+//  DateTime: 18.06.2020 17:29:32
 //  UserName: tomek
-//  GPLEX input file <kompilator.lex - 17.06.2020 19:14:53>
+//  GPLEX input file <kompilator.lex - 18.06.2020 17:29:27>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: parser, minimize
@@ -172,9 +172,9 @@ namespace GardensPoint
 /* NxS[   3] */ new Table(0, 0, -1, null),
 /* NxS[   4] */ new Table(0, 0, -1, null),
 /* NxS[   5] */ new Table(61, 1, -1, new sbyte[] {89}),
-/* NxS[   6] */ new Table(10, 25, 101, new sbyte[] {-1, 101, 101, 101, 101, 101, 
+/* NxS[   6] */ new Table(10, 30, 101, new sbyte[] {-1, 101, 101, 101, 101, 101, 
           101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 
-          101, 101, 88}),
+          101, 101, 88, 101, 101, 101, 101, -1}),
 /* NxS[   7] */ new Table(38, 1, -1, new sbyte[] {87}),
 /* NxS[   8] */ new Table(100, 6, -1, new sbyte[] {92, -1, -1, -1, -1, 93}),
 /* NxS[   9] */ new Table(0, 0, -1, null),
@@ -539,9 +539,9 @@ namespace GardensPoint
 /* NxS[  85] */ new Table(0, 0, -1, null),
 /* NxS[  86] */ new Table(0, 0, -1, null),
 /* NxS[  87] */ new Table(0, 0, -1, null),
-/* NxS[  88] */ new Table(10, 25, 101, new sbyte[] {-1, 101, 101, 101, 101, 101, 
+/* NxS[  88] */ new Table(10, 30, 101, new sbyte[] {-1, 101, 101, 101, 101, 101, 
           101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 
-          101, 101, 88}),
+          101, 101, 88, 101, 101, 101, 101, -1}),
 /* NxS[  89] */ new Table(0, 0, -1, null),
 /* NxS[  90] */ new Table(9, 118, 1, new sbyte[] {2, -1, 1, 1, 3, 1, 
           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
@@ -562,9 +562,9 @@ namespace GardensPoint
 /* NxS[  98] */ new Table(108, 1, -1, new sbyte[] {99}),
 /* NxS[  99] */ new Table(101, 1, -1, new sbyte[] {100}),
 /* NxS[ 100] */ new Table(41, 1, -1, new sbyte[] {86}),
-/* NxS[ 101] */ new Table(10, 25, 101, new sbyte[] {-1, 101, 101, 101, 101, 101, 
+/* NxS[ 101] */ new Table(10, 30, 101, new sbyte[] {-1, 101, 101, 101, 101, 101, 
           101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 
-          101, 101, 88}),
+          101, 101, 88, 101, 101, 101, 101, -1}),
     };
 
 int NextState() {

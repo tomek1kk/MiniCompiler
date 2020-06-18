@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 18.06.2020 00:51:56
+// DateTime: 18.06.2020 17:29:33
 // UserName: tomek
-// Input file <kompilator.y - 18.06.2020 00:51:50>
+// Input file <kompilator.y - 18.06.2020 16:56:20>
 
 // options: lines gplex
 
@@ -638,7 +638,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                     Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
                     if (Compiler.symbolTable[ValueStack[ValueStack.Depth-2].val] == "bool")
                     {
-                    
+                        // todo
                     }
                     else if (Compiler.symbolTable[ValueStack[ValueStack.Depth-2].val] == "int")
                     {
