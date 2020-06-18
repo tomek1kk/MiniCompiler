@@ -22,7 +22,7 @@ Comment     "//"[^\n]*
 "bool"	      { return (int)Tokens.Bool; }
 "true"  	  { return (int)Tokens.True; }
 "false"	      { return (int)Tokens.False; }
-{Comment}     { yylval.val=yytext; return (int)Tokens.Comment; }
+{Comment}     { }
 {IntNumber}   { yylval.val=yytext; return (int)Tokens.IntNumber; }
 {RealNumber}  { yylval.val=yytext; return (int)Tokens.RealNumber; }
 {Ident}       { yylval.val=yytext; return (int)Tokens.Ident; }

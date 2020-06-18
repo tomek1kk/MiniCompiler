@@ -6,9 +6,9 @@
 //
 //  GPLEX Version:  1.2.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 18.06.2020 17:44:58
+//  DateTime: 18.06.2020 21:40:49
 //  UserName: tomek
-//  GPLEX input file <kompilator.lex - 18.06.2020 17:44:36>
+//  GPLEX input file <kompilator.lex - 18.06.2020 21:40:04>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: parser, minimize
@@ -1163,7 +1163,7 @@ return (int)Tokens.LessEqual;
 yylval.val=yytext; return (int)Tokens.RealNumber;
             break;
         case 85:
-yylval.val=yytext; return (int)Tokens.Comment;
+{ }
             break;
         case 86:
 return (int)Tokens.IntConv;

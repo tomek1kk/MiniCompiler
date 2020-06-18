@@ -1,10 +1,10 @@
 
 // ==========================================================================
-//  GPPG error listing for yacc source file <kompilator.y - 18.06.2020 17:44:52>
+//  GPPG error listing for yacc source file <kompilator.y - 18.06.2020 21:40:29>
 // ==========================================================================
 //  Version:  1.5.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 18.06.2020 17:45:02
+//  DateTime: 18.06.2020 21:40:36
 //  UserName: tomek
 // ==========================================================================
 
@@ -33,11 +33,11 @@ public char    type;
 %type <type> code stat exp term factor declare bool cond while log
 
 %%
-// Error: There are 2 non-terminating NonTerminal Symbols
-   //  {comment, Comment}
-// Warning: Terminating Comment fixes the following size-2 NonTerminal set
-   // {comment, Comment}
-// Error: NonTerminal symbol "Comment" has no productions
+// Error: There are 1 non-terminating NonTerminal Symbols
+   //  {comment}
+// Warning: Terminating comment fixes the following size-1 NonTerminal set
+   // {comment}
+// Error: NonTerminal symbol "comment" has no productions
 // -----------------------------------------------------------------------
 start    : Program OpenBracket code CloseBracket 
            {
@@ -57,8 +57,6 @@ return   : Return Semicolon
             Compiler.EmitCode("ldc.i4 0");
             Compiler.EmitCode("leave EndMain");
           }
-          ;
-comment   : Comment
           ;
 stat      : write | assign | declare | while | block | cond | return | read | comment
           | error
