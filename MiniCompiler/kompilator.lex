@@ -7,7 +7,7 @@ RealNumber  ([1-9][0-9]*\.[0-9]+)|(0\.[0-9]+)
 Ident		([a-zA-Z])[0-9a-zA-Z]*
 String      \"[^'\"'\n]*[^'\'\n]*\"
 PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
-Comment     "//".*
+Comment     "//"[^\n]*
 
 %%
 "program"	  { return (int)Tokens.Program; }
@@ -22,6 +22,7 @@ Comment     "//".*
 "bool"	      { return (int)Tokens.Bool; }
 "true"  	  { return (int)Tokens.True; }
 "false"	      { return (int)Tokens.False; }
+{Comment}     { yylval.val=yytext; return (int)Tokens.Comment; }
 {IntNumber}   { yylval.val=yytext; return (int)Tokens.IntNumber; }
 {RealNumber}  { yylval.val=yytext; return (int)Tokens.RealNumber; }
 {Ident}       { yylval.val=yytext; return (int)Tokens.Ident; }

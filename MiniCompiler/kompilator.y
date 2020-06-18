@@ -12,7 +12,7 @@ public char    type;
 %token Assign Plus Minus Multiplies Divides SumLog IlLog
 %token Program Return Eof Error 
 %token If Else While
-%token Read Write
+%token Read Write Comment
 %token Int Double Bool IntConv DoubleConv
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar Return
@@ -41,7 +41,9 @@ return   : Return Semicolon
             Compiler.EmitCode("leave EndMain");
           }
           ;
-stat      : write | assign | declare | while | block | cond | return | read
+comment   : Comment
+          ;
+stat      : write | assign | declare | while | block | cond | return | read | comment
           | error
           {
                Console.WriteLine("  line {0,3}:  syntax error",lineno);
