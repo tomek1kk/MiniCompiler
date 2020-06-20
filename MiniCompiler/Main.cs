@@ -8,7 +8,7 @@ using System.Linq;
 
 public class Compiler
 {
-
+    public static string boolVal;
     public static int errors = 0;
 
     public static List<string> source;

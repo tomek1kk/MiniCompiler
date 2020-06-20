@@ -19,7 +19,7 @@ public char    type;
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
 %token <val> Ident IntNumber RealNumber String
 
-%type <type> code stat exp term factor declare bool cond while log assign
+%type <type> code stat exp term factor declare cond while log assign expLog expRel
 
 %%
 start    : Program OpenBracket declars CloseBracket 
@@ -65,7 +65,7 @@ while     : While
                     temp = Compiler.NewTemp();
                 Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
             }
-            OpenPar fullbool ClosePar 
+            OpenPar expLog ClosePar 
             { 
                 if (deeplevel == 1)
                     temp2 = Compiler.NewTemp();
@@ -78,7 +78,7 @@ while     : While
                 deeplevel--;
             }
           ;
-ifhead     : If OpenPar fullbool ClosePar
+ifhead     : If OpenPar expLog ClosePar
             {
                 deeplevel++;
                 if (deeplevel == 1)
@@ -109,106 +109,6 @@ ifelse    : ifhead
                 deeplevel--;
             }
             ;
-fullbool  : fullbool And fullbool
-            {
-                 Compiler.EmitCode("and");
-            }
-            | fullbool Or fullbool
-            {
-                 Compiler.EmitCode("or");
-            }
-            | OpenPar fullbool ClosePar
-            | bool
-            | Exclamation OpenPar fullbool ClosePar
-            {
-                    Compiler.EmitCode("ldc.i4 1");
-                    Compiler.EmitCode("sub");
-            }
-            ;
-bool      :  exp Equal bool
-            {
-                Compiler.EmitCode("ceq");
-            }
-             exp Equal exp 
-            {
-                Compiler.EmitCode("ceq");
-            }
-            | exp NotEqual exp
-            {
-                Compiler.EmitCode("ceq");
-                Compiler.EmitCode("neg");
-            }
-            | exp Greater exp
-            {
-                Compiler.EmitCode("cgt");
-            }
-            | exp GreaterEqual exp
-            {
-                Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("sub");
-                Compiler.EmitCode("cgt");
-            }
-            | exp Less exp
-            {
-                Compiler.EmitCode("clt");
-            }
-            | exp LessEqual exp
-            {
-                Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("add");
-                Compiler.EmitCode("clt");
-            }
-            | True 
-            {
-                Compiler.EmitCode("ldc.i4 1"); 
-            }
-            | False
-            {
-                Compiler.EmitCode("ldc.i4 0");
-            }
-            | Ident
-            {
-                if (Compiler.symbolTable.ContainsKey($1))
-                {
-                    if (Compiler.symbolTable[$1] == "bool")
-                    {
-                        Compiler.EmitCode("ldloc {0}", $1);
-                    }
-                    else
-                    {
-                        Console.WriteLine("line {0,3}:  only bool variables can be used that way", @1.StartLine);
-                        Compiler.errors++;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("line {0,3}:  use of undeclared variable!", @1.StartLine);
-                    Compiler.errors++;
-                }
-            }
-            | Exclamation Ident
-            {
-                if (Compiler.symbolTable.ContainsKey($2))
-                {
-                    if (Compiler.symbolTable[$2] == "bool")
-                    {
-                        Compiler.EmitCode("ldloc {0}", $2);
-                        Compiler.EmitCode("ldc.i4 1");
-                        Compiler.EmitCode("sub");
-                    }
-                    else
-                    {
-                        Console.WriteLine("line {0,3}:  only bool variables can be used with !", @1.StartLine);
-                        Compiler.errors++;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("line {0,3}:  use of undeclared variable!", @1.StartLine);
-                    Compiler.errors++;
-                }
-            }
-          ; 
 declare   : Int Ident Semicolon
             {
                 if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
@@ -279,7 +179,7 @@ read      : Read Ident Semicolon
                     Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
                     if (Compiler.symbolTable[$2] == "bool")
                     {
-                        // todo
+                        //todo
                     }
                     else if (Compiler.symbolTable[$2] == "int")
                     {
@@ -291,10 +191,10 @@ read      : Read Ident Semicolon
                     }
                     Compiler.EmitCode("stloc {0}", $2);
                }
-            }
+          }
           ;
-assign    :  Ident Assign assign
-            {
+assign    :  Ident Assign assign 
+          {       
                if (!Compiler.symbolTable.ContainsKey($1)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
@@ -319,19 +219,19 @@ assign    :  Ident Assign assign
                     }
                     else
                     {
-                      $$ = $3;
+                        $$ = $3;
                         if (Compiler.symbolTable[$1]=="double" && $3 =='i')
                         {
                             Compiler.EmitCode("conv.r8");
                             $$ = 'd';
                         }
-
-                        Compiler.EmitCode("dup");
+                        
+                        Compiler.EmitCode("ldloc {0}", vari);
                         Compiler.EmitCode("stloc {0}", $1);
                     }
                }
             }
-            | Ident Assign exp Semicolon
+            | Ident Assign expLog Semicolon
             {
                if (!Compiler.symbolTable.ContainsKey($1)) 
                {
@@ -363,14 +263,110 @@ assign    :  Ident Assign assign
                             Compiler.EmitCode("conv.r8");
                             $$ = 'd';
                         }
-
-                        Compiler.EmitCode("dup");
+                        vari = $1;
                         Compiler.EmitCode("stloc {0}", $1);
                         
                     }
                }
             } 
           ;
+expLog    : expLog And expRel
+            {
+                if ($1 != 'b' || $3 != 'b')
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - && operator can be used to bool arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    Compiler.EmitCode("and");
+                    $$ = 'b';
+                }
+            }
+            | expLog Or expRel
+            {
+                if ($1 != 'b' || $3 != 'b')
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - || operator can be used to bool arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    Compiler.EmitCode("or");
+                    $$ = 'b';
+                }
+            }
+            | expRel { $$ = $1; }
+            ;
+expRel    : expRel Equal exp
+            {
+                if (($1 == 'b' && $3 != 'b') || ($1 != 'b' && $3 == 'b'))
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - == operator cannot be used to these arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    Compiler.EmitCode("ceq");
+                    $$ = 'b';
+                }
+            }
+            | expRel NotEqual exp
+            {
+                if (($1 == 'b' && $3 != 'b') || ($1 != 'b' && $3 == 'b'))
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - != operator cannot be used to these arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    Compiler.EmitCode("ceq");
+                    Compiler.EmitCode("neg");
+                    $$ = 'b';
+                }
+            }
+            | expRel Greater exp
+            {
+                if ($1 == 'b' || $3 == 'b')
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - > operator cannot be used to bool arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    Compiler.EmitCode("cgt");
+                    $$ = 'b';
+                }
+            }
+            | expRel GreaterEqual exp
+            {
+                if ($1 == 'b' || $3 == 'b')
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - >= operator cannot be used to bool arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    Compiler.EmitCode("ldc.i4 1");
+                    Compiler.EmitCode("sub");
+                    Compiler.EmitCode("cgt");
+                    $$ = 'b';
+                }
+            }
+            | expRel Less exp
+            {
+                Compiler.EmitCode("clt");
+                $$ = 'b';
+            }
+            | expRel LessEqual exp
+            {
+                Compiler.EmitCode("ldc.i4 1");
+                Compiler.EmitCode("add");
+                Compiler.EmitCode("clt");
+                $$ = 'b';
+            }
+            | exp { $$ = $1; }
+            ;
 exp       : exp Plus term
                { $$ = BinaryOpGenCode(Tokens.Plus, $1, $3); }
           | exp Minus term
@@ -393,19 +389,24 @@ log       : log SumLog log
           | factor
                { $$ = $1; }
           ;
-factor    : OpenPar exp ClosePar
+factor    : OpenPar expLog ClosePar
                { $$ = $2; }
-          | Minus OpenPar exp ClosePar
+          | Minus OpenPar expLog ClosePar
           {
             $$ = $3;
             Compiler.EmitCode("neg");
           }
-          | Neg OpenPar exp ClosePar
+          | Exclamation OpenPar expLog ClosePar
+          {
+            Compiler.EmitCode("ldc.i4 1");
+            Compiler.EmitCode("sub");
+          }
+          | Neg OpenPar expLog ClosePar
           {
             $$ = $3;
             Compiler.EmitCode("not");
           }
-          | IntConv OpenPar exp ClosePar
+          | IntConv OpenPar expLog ClosePar
           {
             if ($3 == 'd')
             {
@@ -418,7 +419,7 @@ factor    : OpenPar exp ClosePar
                  Compiler.errors++;
             }
           }
-          | DoubleConv OpenPar exp ClosePar
+          | DoubleConv OpenPar expLog ClosePar
           {
             if ($3 == 'i')
             {
@@ -468,49 +469,25 @@ factor    : OpenPar exp ClosePar
           }
           | True
           {
-                neg=1;
                 Compiler.EmitCode("ldc.i4 1");
                 $$ = 'b';
           }
           | False
           {
-                neg=1;
                 Compiler.EmitCode("ldc.i4 0");
                 $$ = 'b';
           }
           | Ident
           {
-
-               Compiler.EmitCode("ldloc {0}", $1);
-               switch(Compiler.symbolTable[$1])
+               if (!Compiler.symbolTable.ContainsKey($1)) 
                {
-                    case "int":
-                        $$ = 'i';
-                        break;
-                    case "double":
-                        $$ = 'd';
-                        break;
-                    case "bool":
-                        $$ = 'b';
-                        break;
-                    default:
-                        Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
-                        Compiler.errors++;
-                        break;
-               }
-          }
-          | Minus Ident
-          {
-               if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
-               {
-                    Console.WriteLine("line {0,3}: cannot use - operator to bool variable", @1.StartLine);
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
                }
                else
                {
-                   Compiler.EmitCode("ldloc {0}", $2);
-                   Compiler.EmitCode("neg");
-                   switch(Compiler.symbolTable[$2])
+                   Compiler.EmitCode("ldloc {0}", $1);
+                   switch(Compiler.symbolTable[$1])
                    {
                         case "int":
                             $$ = 'i';
@@ -518,90 +495,174 @@ factor    : OpenPar exp ClosePar
                         case "double":
                             $$ = 'd';
                             break;
+                        case "bool":
+                            $$ = 'b';
+                            break;
                         default:
                             Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
                             Compiler.errors++;
                             break;
+                   }
+               }
+          }
+          | Minus Ident
+          {
+               if (!Compiler.symbolTable.ContainsKey($2)) 
+               {
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
+                    Compiler.errors++;
+               }
+               else 
+               {
+                   if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
+                   {
+                        Console.WriteLine("line {0,3}: cannot use - operator to bool variable", @1.StartLine);
+                        Compiler.errors++;
+                   }
+                   else
+                   {
+                       Compiler.EmitCode("ldloc {0}", $2);
+                       Compiler.EmitCode("neg");
+                       switch(Compiler.symbolTable[$2])
+                       {
+                            case "int":
+                                $$ = 'i';
+                                break;
+                            case "double":
+                                $$ = 'd';
+                                break;
+                            default:
+                                Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
+                                Compiler.errors++;
+                                break;
+                       }
                    }
                }
           }
           | IntConv Ident
           {
-               if (Compiler.symbolTable[$2] != "double")
+               if (!Compiler.symbolTable.ContainsKey($2)) 
                {
-                    Console.WriteLine("line {0,3}: cannot use (int) operator to non double variable", @1.StartLine);
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
                }
                else
                {
-                   Compiler.EmitCode("ldloc {0}", $2);
-                   Compiler.EmitCode("conv.i4");
-                   $$ = 'i';
+                   if (Compiler.symbolTable[$2] != "double")
+                   {
+                        Console.WriteLine("line {0,3}: cannot use (int) operator to non double variable", @1.StartLine);
+                        Compiler.errors++;
+                   }
+                   else
+                   {
+                       Compiler.EmitCode("ldloc {0}", $2);
+                       Compiler.EmitCode("conv.i4");
+                       $$ = 'i';
+                   }
                }
           }
           | DoubleConv Ident
           {
-               if (Compiler.symbolTable[$2] != "int")
+               if (!Compiler.symbolTable.ContainsKey($2)) 
                {
-                    Console.WriteLine("line {0,3}: cannot use (double) operator to non int variable", @1.StartLine);
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
                }
                else
                {
-                   Compiler.EmitCode("ldloc {0}", $2);
-                   Compiler.EmitCode("conv.r8");
-                   $$ = 'd';
+                   if (Compiler.symbolTable[$2] != "int")
+                   {
+                        Console.WriteLine("line {0,3}: cannot use (double) operator to non int variable", @1.StartLine);
+                        Compiler.errors++;
+                   }
+                   else
+                   {
+                       Compiler.EmitCode("ldloc {0}", $2);
+                       Compiler.EmitCode("conv.r8");
+                       $$ = 'd';
+                   }
                }
           }
            | Neg Ident
           {
-               if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
+               if (!Compiler.symbolTable.ContainsKey($2)) 
                {
-                    Console.WriteLine("line {0,3}: cannot use ~ operator to bool variable", @1.StartLine);
+                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
                }
                else
                {
-                   Compiler.EmitCode("ldloc {0}", $2);
-                   Compiler.EmitCode("not");
-                   switch(Compiler.symbolTable[$2])
+                   if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
                    {
-                        case "int":
-                            $$ = 'i';
-                            break;
-                        case "double":
-                            $$ = 'd';
-                            break;
-                        default:
-                            Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
-                            Compiler.errors++;
-                            break;
+                        Console.WriteLine("line {0,3}: cannot use ~ operator to bool variable", @1.StartLine);
+                        Compiler.errors++;
+                   }
+                   else
+                   {
+                       Compiler.EmitCode("ldloc {0}", $2);
+                       Compiler.EmitCode("not");
+                       switch(Compiler.symbolTable[$2])
+                       {
+                            case "int":
+                                $$ = 'i';
+                                break;
+                            case "double":
+                                $$ = 'd';
+                                break;
+                            default:
+                                Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
+                                Compiler.errors++;
+                                break;
+                       }
                    }
                }
           }
+         | Exclamation Ident
+            {
+                if (Compiler.symbolTable.ContainsKey($2))
+                {
+                    if (Compiler.symbolTable[$2] == "bool")
+                    {
+                        Compiler.EmitCode("ldloc {0}", $2);
+                        Compiler.EmitCode("ldc.i4 1");
+                        Compiler.EmitCode("sub");
+                    }
+                    else
+                    {
+                        Console.WriteLine("line {0,3}:  only bool variables can be used with !", @1.StartLine);
+                        Compiler.errors++;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("line {0,3}:  use of undeclared variable!", @1.StartLine);
+                    Compiler.errors++;
+                }
+            }
           ;
 
 %%
-int neg = 1;
+
 string temp;
 string temp2;
 int deeplevel = 0;
+string vari;
 
 public Parser(Scanner scanner) : base(scanner) { }
 
 private char BinaryOpGenCode(Tokens t, char type1, char type2)
-    {
+{
     char type = ( type1=='i' && type2=='i' ) ? 'i' : 'r' ;
     if ( type1!=type )
-        {
+    {
         Compiler.EmitCode("stloc temp");
         Compiler.EmitCode("conv.r8");
         Compiler.EmitCode("ldloc temp");
-        }
+    }
     if ( type2!=type )
         Compiler.EmitCode("conv.r8");
     switch ( t )
-        {
+    {
         case Tokens.Plus:
             Compiler.EmitCode("add");
             break;
@@ -624,6 +685,6 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
             //Console.WriteLine($"  line {0}:  internal gencode error", @1.StartLine);
             ++Compiler.errors;
             break;
-        }
-    return type;
     }
+    return type;
+}
