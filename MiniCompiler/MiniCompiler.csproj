@@ -55,4 +55,12 @@
     <None Include="kompilator.y" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>gplex /out:../../lexer.cs ../../kompilator.lex
+gppg /gplex /out:../../parser.cs ../../kompilator.y</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -6,9 +6,9 @@
 //
 //  GPLEX Version:  1.2.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 18.06.2020 21:40:49
+//  DateTime: 20.06.2020 17:58:53
 //  UserName: tomek
-//  GPLEX input file <kompilator.lex - 18.06.2020 21:40:04>
+//  GPLEX input file <../../kompilator.lex - 20.06.2020 16:33:56>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: parser, minimize
@@ -939,6 +939,7 @@ int NextState() {
         // ============== The main tokenizer code =================
 
         int Scan() {
+            try {
                 for (; ; ) {
                     int next;              // next state to enter
 #if LEFTANCHORS
@@ -1187,6 +1188,12 @@ return (int)Tokens.NotEqual;
 #endregion
                     }
                 }
+            } // end try
+            finally {
+// User-specified epilog to scan()
+yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
+// End, user-specified epilog
+            } // end finally
         }
 
 #if BACKUP

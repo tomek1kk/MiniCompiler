@@ -6,25 +6,12 @@ using GardensPoint;
 using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 
-public class Symbol
-{
-    public Symbol() { }
-    public Symbol(string ident, string type)
-    {
-        Ident = ident;
-        Type = type;
-    }
-    public string Ident { get; set; }
-    public string Type { get; set; }
-}
-
 public class Compiler
 {
 
     public static int errors = 0;
 
     public static List<string> source;
-    //public static HashSet<Symbol> symbolTable = new HashSet<Symbol>();
     public static Dictionary<string, string> symbolTable = new Dictionary<string, string>();
     
     // arg[0] określa plik źródłowy
@@ -33,7 +20,7 @@ public class Compiler
     {
         string file;
         FileStream source;
-        Console.WriteLine("\nSingle-Pass CIL Code Generator for Multiline Calculator - Gardens Point");
+        Console.WriteLine("\nMini programming language compiler - Gardens Point");
         if (args.Length >= 1)
             file = args[0];
         else

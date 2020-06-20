@@ -57,3 +57,7 @@ Comment     "//"[^\n]*
 "\t"          { }
 {PrintErr}    { return (int)Tokens.Error; }
 .             { return (int)Tokens.Error; }
+
+%{
+  yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
+%}
