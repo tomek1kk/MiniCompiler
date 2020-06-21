@@ -366,24 +366,24 @@ expRel    : expRel Equal exp
             | exp { $$ = $1; }
             ;
 exp       : exp Plus term
-               { $$ = BinaryOpGenCode(Tokens.Plus, $1, $3); }
+               { $$ = BinaryOpGenCode(Tokens.Plus, $1, $3, @1.StartLine); }
           | exp Minus term
-               { $$ = BinaryOpGenCode(Tokens.Minus, $1, $3); }
+               { $$ = BinaryOpGenCode(Tokens.Minus, $1, $3, @1.StartLine); }
           | term
                { $$ = $1; }
           ;
 
 term      : term Multiplies log
-               { $$ = BinaryOpGenCode(Tokens.Multiplies, $1, $3); }
+               { $$ = BinaryOpGenCode(Tokens.Multiplies, $1, $3, @1.StartLine); }
           | term Divides log
-               { $$ = BinaryOpGenCode(Tokens.Divides, $1, $3); }
+               { $$ = BinaryOpGenCode(Tokens.Divides, $1, $3, @1.StartLine); }
           | log
                { $$ = $1; }
           ;
 log       : log SumLog log
-               { $$ = BinaryOpGenCode(Tokens.SumLog, $1, $3); }
+               { $$ = BinaryOpGenCode(Tokens.SumLog, $1, $3, @1.StartLine); }
           | log IlLog log
-               { $$ = BinaryOpGenCode(Tokens.IlLog, $1, $3); }
+               { $$ = BinaryOpGenCode(Tokens.IlLog, $1, $3, @1.StartLine); }
           | factor
                { $$ = $1; }
           ;
@@ -429,29 +429,46 @@ factor    : OpenPar expLog ClosePar
                 Compiler.EmitCode("not");
             }
           }
-          | IntConv OpenPar expLog ClosePar
+          | IntConv factor
           {
-            if ($3 == 'd')
+            if ($2 == 'd')
             {
                 $$ = 'i';
                 Compiler.EmitCode("conv.i4");
             }
+            else if ($2 == 'i')
+            {
+                $$ = 'i';
+            }
+            else if ($2 == 'b')
+            {
+                $$ = 'i';
+            }
             else
             {
-                 Console.WriteLine("line {0,3}:  expression must be double to use (int) convertion",@1.StartLine);
+                 Console.WriteLine("line {0,3}:  type not recognized",@1.StartLine);
                  Compiler.errors++;
             }
           }
-          | DoubleConv OpenPar expLog ClosePar
+          | DoubleConv factor
           {
-            if ($3 == 'i')
+            if ($2 == 'd')
             {
                 $$ = 'd';
+            }
+            else if ($2 == 'i')
+            {
                 Compiler.EmitCode("conv.r8");
+                $$ = 'd';
+            }
+            else if ($2 == 'b')
+            {
+                Compiler.EmitCode("conv.r8");
+                $$ = 'd';
             }
             else
             {
-                 Console.WriteLine("line {0,3}:  expression must be int to use (double) convertion",@1.StartLine);
+                 Console.WriteLine("line {0,3}:  type not recognized",@1.StartLine);
                  Compiler.errors++;
             }
           }
@@ -465,39 +482,6 @@ factor    : OpenPar expLog ClosePar
                double d = double.Parse($1,System.Globalization.CultureInfo.InvariantCulture);
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
                $$ = 'd'; 
-          }
-          | DoubleConv IntNumber
-          {
-            Compiler.EmitCode("ldc.i4 {0}",int.Parse($2));
-            Compiler.EmitCode("conv.r8");
-            $$ = 'd';
-          }
-          | IntConv RealNumber
-          {
-            double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture);
-            Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
-            Compiler.EmitCode("conv.i4");
-            $$ = 'i';
-          }
-          | IntConv True
-          {
-            Compiler.EmitCode("ldc.i4 1");
-            $$ = 'i';
-          }
-          | IntConv False
-          {
-            Compiler.EmitCode("ldc.i4 0");
-            $$ = 'i';
-          }
-          | DoubleConv True
-          {
-            Compiler.EmitCode("ldc.r8 1");
-            $$ = 'd';
-          }
-          | DoubleConv False
-          {
-            Compiler.EmitCode("ldc.r8 0");
-            $$ = 'd';
           }
           | True
           {
@@ -537,35 +521,6 @@ factor    : OpenPar expLog ClosePar
                    }
                }
           }
-          | IntConv Ident
-          {
-               if (!Compiler.symbolTable.ContainsKey($2)) 
-               {
-                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
-                    Compiler.errors++;
-               }
-               else
-               { 
-                    Compiler.EmitCode("ldloc {0}", $2);
-                    if (Compiler.symbolTable[$2] == "double")
-                        Compiler.EmitCode("conv.i4");
-                    $$ = 'i';
-               }
-          }
-          | DoubleConv Ident
-          {
-               if (!Compiler.symbolTable.ContainsKey($2)) 
-               {
-                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
-                    Compiler.errors++;
-               }
-               else
-               {
-                    Compiler.EmitCode("ldloc {0}", $2);
-                    Compiler.EmitCode("conv.r8");
-                    $$ = 'd';
-               }
-          }
           ;
 
 %%
@@ -577,18 +532,18 @@ string vari;
 
 public Parser(Scanner scanner) : base(scanner) { }
 
-private char BinaryOpGenCode(Tokens t, char type1, char type2)
+private char BinaryOpGenCode(Tokens t, char type1, char type2, int line)
 {
-    char type = ( type1=='i' && type2=='i' ) ? 'i' : 'r' ;
-    if ( type1!=type )
+    char type = (type1=='i' && type2=='i') ? 'i' : 'd' ;
+    if (type1 != type)
     {
         Compiler.EmitCode("stloc temp");
         Compiler.EmitCode("conv.r8");
         Compiler.EmitCode("ldloc temp");
     }
-    if ( type2!=type )
+    if (type2 != type)
         Compiler.EmitCode("conv.r8");
-    switch ( t )
+    switch (t)
     {
         case Tokens.Plus:
             Compiler.EmitCode("add");
@@ -609,7 +564,7 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2)
             Compiler.EmitCode("and");
             break;
         default:
-            //Console.WriteLine($"  line {0}:  internal gencode error", @1.StartLine);
+            Console.WriteLine($"line {0}:  token not recognized", line);
             ++Compiler.errors;
             break;
     }
