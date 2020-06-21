@@ -23,9 +23,6 @@ public char    type;
 
 %%
 start    : Program OpenBracket declars CloseBracket 
-           {
-               Compiler.EmitCode("ldc.i4 0");
-           }
                Eof 
            ;
 declars  : declare declars | code;
@@ -154,11 +151,11 @@ write     : Write
             {
                Compiler.EmitCode("ldstr \"{0}\"");
             }
-            exp Semicolon
+            expLog Semicolon
             {
                Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
-               Compiler.EmitCode("call void [mscorlib]System.Console::Write(string,object,object)");
+               Compiler.EmitCode("call void [mscorlib]System.Console::Write(string, object, object)");
                Compiler.EmitCode("");
             }
             | Write String Semicolon
@@ -180,6 +177,7 @@ read      : Read Ident Semicolon
                     if (Compiler.symbolTable[$2] == "bool")
                     {
                         //todo
+                        Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
                     }
                     else if (Compiler.symbolTable[$2] == "int")
                     {
@@ -245,7 +243,7 @@ assign    :  Ident Assign assign
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to int (use convert operator)",@1.StartLine);
                         ++Compiler.errors;
                     } 
-                    else if (Compiler.symbolTable[$1]=="double" && $3 != 'd' && $3 != 'i')
+                    else if (Compiler.symbolTable[$1]=="double" && $3 == 'b')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to double (use convert operator)",@1.StartLine);
                         ++Compiler.errors;
@@ -403,8 +401,16 @@ factor    : OpenPar expLog ClosePar
           }
           | Neg OpenPar expLog ClosePar
           {
-            $$ = $3;
-            Compiler.EmitCode("not");
+            if ($3 != 'i')
+            {
+                 Console.WriteLine("line {0,3}:  expression must be int to use ~ operator",@1.StartLine);
+                 Compiler.errors++;
+            }
+            else
+            {
+                $$ = $3;
+                Compiler.EmitCode("not");
+            }
           }
           | IntConv OpenPar expLog ClosePar
           {
@@ -460,6 +466,26 @@ factor    : OpenPar expLog ClosePar
             Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
             Compiler.EmitCode("conv.i4");
             $$ = 'i';
+          }
+          | IntConv True
+          {
+            Compiler.EmitCode("ldc.i4 1");
+            $$ = 'i';
+          }
+          | IntConv False
+          {
+            Compiler.EmitCode("ldc.i4 0");
+            $$ = 'i';
+          }
+          | DoubleConv True
+          {
+            Compiler.EmitCode("ldc.r8 1");
+            $$ = 'd';
+          }
+          | DoubleConv False
+          {
+            Compiler.EmitCode("ldc.r8 0");
+            $$ = 'd';
           }
           | Minus RealNumber
           {
@@ -547,18 +573,11 @@ factor    : OpenPar expLog ClosePar
                     Compiler.errors++;
                }
                else
-               {
-                   if (Compiler.symbolTable[$2] != "double")
-                   {
-                        Console.WriteLine("line {0,3}: cannot use (int) operator to non double variable", @1.StartLine);
-                        Compiler.errors++;
-                   }
-                   else
-                   {
-                       Compiler.EmitCode("ldloc {0}", $2);
-                       Compiler.EmitCode("conv.i4");
-                       $$ = 'i';
-                   }
+               { 
+                    Compiler.EmitCode("ldloc {0}", $2);
+                    if (Compiler.symbolTable[$2] == "double")
+                        Compiler.EmitCode("conv.i4");
+                    $$ = 'i';
                }
           }
           | DoubleConv Ident
@@ -570,17 +589,9 @@ factor    : OpenPar expLog ClosePar
                }
                else
                {
-                   if (Compiler.symbolTable[$2] != "int")
-                   {
-                        Console.WriteLine("line {0,3}: cannot use (double) operator to non int variable", @1.StartLine);
-                        Compiler.errors++;
-                   }
-                   else
-                   {
-                       Compiler.EmitCode("ldloc {0}", $2);
-                       Compiler.EmitCode("conv.r8");
-                       $$ = 'd';
-                   }
+                    Compiler.EmitCode("ldloc {0}", $2);
+                    Compiler.EmitCode("conv.r8");
+                    $$ = 'd';
                }
           }
            | Neg Ident
@@ -592,28 +603,16 @@ factor    : OpenPar expLog ClosePar
                }
                else
                {
-                   if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
+                   if (Compiler.symbolTable[$2] != "int")
                    {
-                        Console.WriteLine("line {0,3}: cannot use ~ operator to bool variable", @1.StartLine);
+                        Console.WriteLine("line {0,3}: cannot use ~ operator to non int variable", @1.StartLine);
                         Compiler.errors++;
                    }
                    else
                    {
                        Compiler.EmitCode("ldloc {0}", $2);
                        Compiler.EmitCode("not");
-                       switch(Compiler.symbolTable[$2])
-                       {
-                            case "int":
-                                $$ = 'i';
-                                break;
-                            case "double":
-                                $$ = 'd';
-                                break;
-                            default:
-                                Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
-                                Compiler.errors++;
-                                break;
-                       }
+                       $$ = 'i';
                    }
                }
           }
