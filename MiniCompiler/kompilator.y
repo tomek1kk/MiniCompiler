@@ -389,26 +389,43 @@ log       : log SumLog log
           ;
 factor    : OpenPar expLog ClosePar
                { $$ = $2; }
-          | Minus OpenPar expLog ClosePar
+          | Minus factor
           {
-            $$ = $3;
-            Compiler.EmitCode("neg");
+            if ($2 == 'b')
+            {
+                 Console.WriteLine("line {0,3}:  expression must be int or double to use - operator",@1.StartLine);
+                 Compiler.errors++;
+            }
+            else
+            {
+                $$ = $2;
+                Compiler.EmitCode("neg");
+            }
           }
-          | Exclamation OpenPar expLog ClosePar
+          | Exclamation factor
           {
-            Compiler.EmitCode("ldc.i4 1");
-            Compiler.EmitCode("sub");
+            if ($2 == 'b')
+            {
+                Compiler.EmitCode("ldc.i4 1");
+                Compiler.EmitCode("sub");
+                $$ = 'b';
+            }
+            else
+            {
+                 Console.WriteLine("line {0,3}:  expression must be bool to use ! operator",@1.StartLine);
+                 Compiler.errors++;
+            }
           }
-          | Neg OpenPar expLog ClosePar
+          | Neg factor
           {
-            if ($3 != 'i')
+            if ($2 != 'i')
             {
                  Console.WriteLine("line {0,3}:  expression must be int to use ~ operator",@1.StartLine);
                  Compiler.errors++;
             }
             else
             {
-                $$ = $3;
+                $$ = $2;
                 Compiler.EmitCode("not");
             }
           }
@@ -449,11 +466,6 @@ factor    : OpenPar expLog ClosePar
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
                $$ = 'd'; 
           }
-          | Minus IntNumber
-          {
-               Compiler.EmitCode("ldc.i4 {0}",int.Parse($2) * -1);
-               $$ = 'i'; 
-          }
           | DoubleConv IntNumber
           {
             Compiler.EmitCode("ldc.i4 {0}",int.Parse($2));
@@ -486,12 +498,6 @@ factor    : OpenPar expLog ClosePar
           {
             Compiler.EmitCode("ldc.r8 0");
             $$ = 'd';
-          }
-          | Minus RealNumber
-          {
-               double d = double.Parse($2,System.Globalization.CultureInfo.InvariantCulture) * -1;
-               Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
-               $$ = 'd'; 
           }
           | True
           {
@@ -531,40 +537,6 @@ factor    : OpenPar expLog ClosePar
                    }
                }
           }
-          | Minus Ident
-          {
-               if (!Compiler.symbolTable.ContainsKey($2)) 
-               {
-                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
-                    Compiler.errors++;
-               }
-               else 
-               {
-                   if (Compiler.symbolTable[$2] != "int" && Compiler.symbolTable[$2] != "double")
-                   {
-                        Console.WriteLine("line {0,3}: cannot use - operator to bool variable", @1.StartLine);
-                        Compiler.errors++;
-                   }
-                   else
-                   {
-                       Compiler.EmitCode("ldloc {0}", $2);
-                       Compiler.EmitCode("neg");
-                       switch(Compiler.symbolTable[$2])
-                       {
-                            case "int":
-                                $$ = 'i';
-                                break;
-                            case "double":
-                                $$ = 'd';
-                                break;
-                            default:
-                                Console.WriteLine("line {0,3}:  unrecognized type",@1.StartLine);
-                                Compiler.errors++;
-                                break;
-                       }
-                   }
-               }
-          }
           | IntConv Ident
           {
                if (!Compiler.symbolTable.ContainsKey($2)) 
@@ -594,50 +566,6 @@ factor    : OpenPar expLog ClosePar
                     $$ = 'd';
                }
           }
-           | Neg Ident
-          {
-               if (!Compiler.symbolTable.ContainsKey($2)) 
-               {
-                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
-                    Compiler.errors++;
-               }
-               else
-               {
-                   if (Compiler.symbolTable[$2] != "int")
-                   {
-                        Console.WriteLine("line {0,3}: cannot use ~ operator to non int variable", @1.StartLine);
-                        Compiler.errors++;
-                   }
-                   else
-                   {
-                       Compiler.EmitCode("ldloc {0}", $2);
-                       Compiler.EmitCode("not");
-                       $$ = 'i';
-                   }
-               }
-          }
-         | Exclamation Ident
-            {
-                if (Compiler.symbolTable.ContainsKey($2))
-                {
-                    if (Compiler.symbolTable[$2] == "bool")
-                    {
-                        Compiler.EmitCode("ldloc {0}", $2);
-                        Compiler.EmitCode("ldc.i4 1");
-                        Compiler.EmitCode("sub");
-                    }
-                    else
-                    {
-                        Console.WriteLine("line {0,3}:  only bool variables can be used with !", @1.StartLine);
-                        Compiler.errors++;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("line {0,3}:  use of undeclared variable!", @1.StartLine);
-                    Compiler.errors++;
-                }
-            }
           ;
 
 %%
