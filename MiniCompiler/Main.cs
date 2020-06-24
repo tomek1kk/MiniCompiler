@@ -52,7 +52,8 @@ public class Compiler
             Console.WriteLine("  compilation successful\n");
         else
         {
-            Console.WriteLine($"\n  {errors} errors detected\n");
+            int e = errors > 1 ? errors - 1 : errors;
+            Console.WriteLine($"\n  {e} errors detected\n");
             File.Delete(file + ".il");
         }
         return errors == 0 ? 0 : 2;

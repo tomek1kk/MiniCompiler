@@ -6,9 +6,9 @@
 //
 //  GPLEX Version:  1.2.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 24.06.2020 18:58:01
+//  DateTime: 24.06.2020 20:30:12
 //  UserName: tomek
-//  GPLEX input file <../../kompilator.lex - 24.06.2020 16:38:56>
+//  GPLEX input file <../../kompilator.lex - 24.06.2020 20:14:27>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: parser, minimize
@@ -125,8 +125,8 @@ namespace GardensPoint
         
         enum Result {accept, noMatch, contextFound};
 
-        const int maxAccept = 90;
-        const int initial = 91;
+        const int maxAccept = 88;
+        const int initial = 89;
         const int eofNum = 0;
         const int goStart = -1;
         const int INITIAL = 0;
@@ -134,7 +134,6 @@ namespace GardensPoint
 #region user code
 public override void yyerror(string msg, params object[] args)
 	{
-		Console.WriteLine("syntax error - program structure: program { code }");
 		Compiler.errors++;
 	}
 #endregion user code
@@ -168,27 +167,27 @@ public override void yyerror(string msg, params object[] args)
         }
     };
 
-    static int[] startState = new int[] {91, 0};
+    static int[] startState = new int[] {89, 0};
 
-    static Table[] NxS = new Table[103] {
+    static Table[] NxS = new Table[92] {
 /* NxS[   0] */ new Table(0, 0, 0, null),
 /* NxS[   1] */ new Table(0, 0, -1, null),
 /* NxS[   2] */ new Table(0, 0, -1, null),
 /* NxS[   3] */ new Table(0, 0, -1, null),
 /* NxS[   4] */ new Table(0, 0, -1, null),
-/* NxS[   5] */ new Table(61, 1, -1, new sbyte[] {90}),
-/* NxS[   6] */ new Table(10, 30, 102, new sbyte[] {-1, 102, 102, 102, 102, 102, 
-          102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 
-          102, 102, 89, 102, 102, 102, 102, -1}),
-/* NxS[   7] */ new Table(38, 1, -1, new sbyte[] {88}),
-/* NxS[   8] */ new Table(100, 6, -1, new sbyte[] {93, -1, -1, -1, -1, 94}),
+/* NxS[   5] */ new Table(61, 1, -1, new sbyte[] {88}),
+/* NxS[   6] */ new Table(10, 30, 91, new sbyte[] {-1, 91, 91, 91, 91, 91, 
+          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
+          91, 91, 87, 91, 91, 91, 91, -1}),
+/* NxS[   7] */ new Table(38, 1, -1, new sbyte[] {86}),
+/* NxS[   8] */ new Table(0, 0, -1, null),
 /* NxS[   9] */ new Table(0, 0, -1, null),
 /* NxS[  10] */ new Table(0, 0, -1, null),
 /* NxS[  11] */ new Table(0, 0, -1, null),
 /* NxS[  12] */ new Table(0, 0, -1, null),
 /* NxS[  13] */ new Table(47, 1, -1, new sbyte[] {85}),
-/* NxS[  14] */ new Table(46, 1, -1, new sbyte[] {92}),
-/* NxS[  15] */ new Table(46, 12, -1, new sbyte[] {92, -1, 15, 15, 15, 15, 
+/* NxS[  14] */ new Table(46, 1, -1, new sbyte[] {90}),
+/* NxS[  15] */ new Table(46, 12, -1, new sbyte[] {90, -1, 15, 15, 15, 15, 
           15, 15, 15, 15, 15, 15}),
 /* NxS[  16] */ new Table(0, 0, -1, null),
 /* NxS[  17] */ new Table(61, 1, -1, new sbyte[] {83}),
@@ -543,13 +542,11 @@ public override void yyerror(string msg, params object[] args)
           84, 84, 84, 84}),
 /* NxS[  85] */ new Table(10, 1, 85, new sbyte[] {-1}),
 /* NxS[  86] */ new Table(0, 0, -1, null),
-/* NxS[  87] */ new Table(0, 0, -1, null),
+/* NxS[  87] */ new Table(10, 30, 91, new sbyte[] {-1, 91, 91, 91, 91, 91, 
+          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
+          91, 91, 87, 91, 91, 91, 91, -1}),
 /* NxS[  88] */ new Table(0, 0, -1, null),
-/* NxS[  89] */ new Table(10, 30, 102, new sbyte[] {-1, 102, 102, 102, 102, 102, 
-          102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 
-          102, 102, 89, 102, 102, 102, 102, -1}),
-/* NxS[  90] */ new Table(0, 0, -1, null),
-/* NxS[  91] */ new Table(9, 118, 1, new sbyte[] {2, -1, 1, 1, 3, 1, 
+/* NxS[  89] */ new Table(9, 118, 1, new sbyte[] {2, -1, 1, 1, 3, 1, 
           1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
           1, 4, 5, 6, 1, 1, 1, 7, 1, 8, 9, 10, 11, 1, 12, 1, 
           13, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 1, 16, 17, 18, 19, 
@@ -557,20 +554,11 @@ public override void yyerror(string msg, params object[] args)
           20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 1, 1, 1, 1, 
           1, 1, 20, 21, 20, 22, 23, 24, 20, 20, 25, 20, 20, 20, 20, 20, 
           20, 26, 20, 27, 20, 28, 20, 20, 29, 20, 20, 20, 30, 31, 32, 33}),
-/* NxS[  92] */ new Table(48, 10, -1, new sbyte[] {84, 84, 84, 84, 84, 84, 
+/* NxS[  90] */ new Table(48, 10, -1, new sbyte[] {84, 84, 84, 84, 84, 84, 
           84, 84, 84, 84}),
-/* NxS[  93] */ new Table(111, 1, -1, new sbyte[] {97}),
-/* NxS[  94] */ new Table(110, 1, -1, new sbyte[] {95}),
-/* NxS[  95] */ new Table(116, 1, -1, new sbyte[] {96}),
-/* NxS[  96] */ new Table(41, 1, -1, new sbyte[] {86}),
-/* NxS[  97] */ new Table(117, 1, -1, new sbyte[] {98}),
-/* NxS[  98] */ new Table(98, 1, -1, new sbyte[] {99}),
-/* NxS[  99] */ new Table(108, 1, -1, new sbyte[] {100}),
-/* NxS[ 100] */ new Table(101, 1, -1, new sbyte[] {101}),
-/* NxS[ 101] */ new Table(41, 1, -1, new sbyte[] {87}),
-/* NxS[ 102] */ new Table(10, 30, 102, new sbyte[] {-1, 102, 102, 102, 102, 102, 
-          102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 
-          102, 102, 89, 102, 102, 102, 102, -1}),
+/* NxS[  91] */ new Table(10, 30, 91, new sbyte[] {-1, 91, 91, 91, 91, 91, 
+          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
+          91, 91, 87, 91, 91, 91, 91, -1}),
     };
 
 int NextState() {
@@ -997,7 +985,7 @@ int NextState() {
     {
         case eofNum:
             switch (currentStart) {
-                case 91:
+                case 89:
 return (int)Tokens.EOF;
                     break;
             }
@@ -1172,18 +1160,12 @@ yylval.val=yytext; return (int)Tokens.RealNumber;
 { }
             break;
         case 86:
-return (int)Tokens.IntConv;
-            break;
-        case 87:
-return (int)Tokens.DoubleConv;
-            break;
-        case 88:
 return (int)Tokens.And;
             break;
-        case 89:
+        case 87:
 yylval.val=yytext; return (int)Tokens.String;
             break;
-        case 90:
+        case 88:
 return (int)Tokens.NotEqual;
             break;
         default:

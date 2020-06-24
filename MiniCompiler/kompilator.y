@@ -9,7 +9,7 @@ public char    type;
 %token Program Return Error
 %token If Else While
 %token Read Write
-%token Int Double Bool IntConv DoubleConv
+%token Int Double Bool 
 %token True False
 %token OpenBracket CloseBracket Semicolon OpenPar ClosePar Return
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
@@ -431,7 +431,7 @@ factor    : OpenPar expLog ClosePar
             if ($2 == 'b')
             {
                 Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("sub");
+                Compiler.EmitCode("xor");
                 $$ = 'b';
             }
             else
@@ -453,18 +453,18 @@ factor    : OpenPar expLog ClosePar
                 Compiler.EmitCode("not");
             }
           }
-          | IntConv factor
+          | OpenPar Int ClosePar factor
           {
-            if ($2 == 'd')
+            if ($4 == 'd')
             {
                 $$ = 'i';
                 Compiler.EmitCode("conv.i4");
             }
-            else if ($2 == 'i')
+            else if ($4 == 'i')
             {
                 $$ = 'i';
             }
-            else if ($2 == 'b')
+            else if ($4 == 'b')
             {
                 $$ = 'i';
             }
@@ -474,18 +474,18 @@ factor    : OpenPar expLog ClosePar
                  Compiler.errors++;
             }
           }
-          | DoubleConv factor
+          | OpenPar Double ClosePar factor
           {
-            if ($2 == 'd')
+            if ($4 == 'd')
             {
                 $$ = 'd';
             }
-            else if ($2 == 'i')
+            else if ($4 == 'i')
             {
                 Compiler.EmitCode("conv.r8");
                 $$ = 'd';
             }
-            else if ($2 == 'b')
+            else if ($4 == 'b')
             {
                 Compiler.EmitCode("conv.r8");
                 $$ = 'd';

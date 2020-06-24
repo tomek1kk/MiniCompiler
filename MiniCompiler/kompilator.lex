@@ -3,7 +3,6 @@
 %{
 	public override void yyerror(string msg, params object[] args)
 	{
-		Console.WriteLine("syntax error - program structure: program { code }");
 		Compiler.errors++;
 	}
 %}
@@ -55,8 +54,7 @@ Comment     "//"[^\n]*
 "~"			  { return (int)Tokens.Neg; }
 "|"			  { return (int)Tokens.SumLog; }
 "&"			  { return (int)Tokens.IlLog; }
-"(int)"		  { return (int)Tokens.IntConv; }
-"(double)"    { return (int)Tokens.DoubleConv; }
+
 "\r"          { }
 <<EOF>>       { return (int)Tokens.EOF; }
 " "           { }
