@@ -153,7 +153,6 @@ write     : Write expLog Semicolon
                 }
                 else if ($2 == 'b')
                 {
-                    Compiler.EmitCode("box [mscorlib]System.Int32");
                     Compiler.EmitCode("call void [mscorlib]System.Console::Write(bool)");
                 }
                 else
