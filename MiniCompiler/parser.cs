@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 24.06.2020 18:45:57
+// DateTime: 24.06.2020 18:58:01
 // UserName: tomek
-// Input file <../../kompilator.y - 24.06.2020 18:45:54>
+// Input file <../../kompilator.y - 24.06.2020 18:57:59>
 
 // options: lines gplex
 
@@ -456,7 +456,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                     if (Compiler.symbolTable[ValueStack[ValueStack.Depth-2].val] == "bool")
                     {
                         //todo
-                        Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
+                        Compiler.EmitCode("call bool [mscorlib]System.Boolean::Parse(string)");
                     }
                     else if (Compiler.symbolTable[ValueStack[ValueStack.Depth-2].val] == "int")
                     {

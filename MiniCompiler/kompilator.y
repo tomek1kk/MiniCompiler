@@ -179,8 +179,7 @@ read      : Read Ident Semicolon
                     Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
                     if (Compiler.symbolTable[$2] == "bool")
                     {
-                        //todo
-                        Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
+                        Compiler.EmitCode("call bool [mscorlib]System.Boolean::Parse(string)");
                     }
                     else if (Compiler.symbolTable[$2] == "int")
                     {
