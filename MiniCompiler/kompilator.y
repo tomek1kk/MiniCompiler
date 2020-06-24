@@ -139,15 +139,28 @@ declare   : Int Ident Semicolon
                 }
             }
             ;
-write     : Write
+write     : Write expLog Semicolon
             {
-               Compiler.EmitCode("ldstr \"{0}\"");
-            }
-            expLog Semicolon
-            {
-               Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
-               Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
-               Compiler.EmitCode("call void [mscorlib]System.Console::Write(string, object, object)");
+                if ($2 == 'd')
+                {
+                    Compiler.EmitCode("stloc _temp");
+                    Compiler.EmitCode("call class [mscorlib]System.Globalization.CultureInfo [mscorlib]System.Globalization.CultureInfo::get_InvariantCulture()");
+                    Compiler.EmitCode("ldstr \"{0:0.000000}\"");
+                    Compiler.EmitCode("ldloc _temp");
+                    Compiler.EmitCode("box [mscorlib]System.Double");
+                    Compiler.EmitCode("call string [mscorlib]System.String::Format(class [mscorlib]System.IFormatProvider, string, object)");
+                    Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
+                }
+                else if ($2 == 'b')
+                {
+                    Compiler.EmitCode("box [mscorlib]System.Int32");
+                    Compiler.EmitCode("call void [mscorlib]System.Console::Write(bool)");
+                }
+                else
+                {
+                    Compiler.EmitCode("box [mscorlib]System.Int32");
+                    Compiler.EmitCode("call void [mscorlib]System.Console::Write(object)");
+                }
             }
             | Write String Semicolon
             {
