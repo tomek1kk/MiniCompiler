@@ -1,8 +1,4 @@
-
-// Uwaga: W wywołaniu generatora gppg należy użyć opcji /gplex
-
 %namespace GardensPoint
-
 %union
 {
 public string  val;
@@ -10,7 +6,7 @@ public char    type;
 }
 
 %token Assign Plus Minus Multiplies Divides SumLog IlLog
-%token Program Return Eof Error 
+%token Program Return Error
 %token If Else While
 %token Read Write
 %token Int Double Bool IntConv DoubleConv
@@ -19,15 +15,13 @@ public char    type;
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
 %token <val> Ident IntNumber RealNumber String
 
-%type <type> code stat exp term factor declare cond while log assign expLog expRel
+%type <type> code stat exp term factor declare cond while log assign expLog expRel myAnd myOr
 
 %%
-start    : Program OpenBracket declars CloseBracket 
-               Eof 
+start    : Program OpenBracket declars CloseBracket
            ;
-declars  : declare declars | code;
-code     : code stat
-          | stat
+declars  : declare declars | code |;
+code     : code stat | stat
           ;
 return   : Return Semicolon
           {
@@ -37,12 +31,6 @@ return   : Return Semicolon
           ;
 stat      : write | assign | while | block | cond | return | read 
           | error
-          {
-               Console.WriteLine("  line {0,3}:  syntax error",@1.StartLine);
-               ++Compiler.errors;
-               yyerrok();
-          }
-          | error Eof
           {
                Console.WriteLine("  line {0,3}:  syntax error",@1.StartLine);
                ++Compiler.errors;
@@ -64,19 +52,21 @@ while     : While
             }
             OpenPar expLog ClosePar 
             { 
+                Compiler.EmitCode("nielicz{0}:", ++pom2);
                 if (deeplevel == 1)
-                    temp2 = Compiler.NewTemp();
-                Compiler.EmitCode("brfalse {0}", temp2 + "_" + deeplevel.ToString()); 
+                    temp3 = Compiler.NewTemp();
+                Compiler.EmitCode("brfalse {0}", temp3 + "_" + deeplevel.ToString()); 
             }
             stat
             { 
                 Compiler.EmitCode("br {0}", temp + "_" + deeplevel.ToString());
-                Compiler.EmitCode("{0}:", temp2 + "_" + deeplevel.ToString());
+                Compiler.EmitCode("{0}:", temp3 + "_" + deeplevel.ToString());
                 deeplevel--;
             }
           ;
 ifhead     : If OpenPar expLog ClosePar
             {
+                Compiler.EmitCode("nielicz{0}:", ++pom2);
                 deeplevel++;
                 if (deeplevel == 1)
                     temp = Compiler.NewTemp();
@@ -94,22 +84,24 @@ ifelse    : ifhead
             stat
             Else
             {
-               
-                if (deeplevel == 1)
+               deeplevelElse++;
+                if (deeplevelElse == 1)
                     temp2 = Compiler.NewTemp();
-                Compiler.EmitCode("br {0}", temp2 + "_" + deeplevel.ToString());
+                Compiler.EmitCode("br {0}", temp2 + "_" + deeplevelElse.ToString());
                 Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
             }
             stat
             {
-                Compiler.EmitCode("{0}:", temp2 + "_" + deeplevel.ToString());
+                Compiler.EmitCode("{0}:", temp2 + "_" + deeplevelElse.ToString());
                 deeplevel--;
+                deeplevelElse--;
             }
             ;
 declare   : Int Ident Semicolon
             {
                 if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
                 {
+                    
                     Compiler.EmitCode(".locals init ( int32 {0} )", $2);
                     Compiler.symbolTable.Add($2, "int");
                 }
@@ -156,7 +148,6 @@ write     : Write
                Compiler.EmitCode("box [mscorlib]System.{0}",$3=='i'?"Int32":"Double");
                Compiler.EmitCode("ldstr \"{0}\"",$3=='i'?"i":"r");
                Compiler.EmitCode("call void [mscorlib]System.Console::Write(string, object, object)");
-               Compiler.EmitCode("");
             }
             | Write String Semicolon
             {
@@ -268,7 +259,29 @@ assign    :  Ident Assign assign
                }
             } 
           ;
-expLog    : expLog And expRel
+myAnd     : expRel
+            {
+                $$ = $1;
+                pom++;
+                Compiler.EmitCode("brtrue licz{0}", pom);
+                Compiler.EmitCode("ldc.i4 0");
+                Compiler.EmitCode("br nielicz{0}", pom2 + 1);
+                Compiler.EmitCode("licz{0}:", pom);
+                Compiler.EmitCode("ldc.i4 1");
+            }
+            ;
+myOr      : expRel
+            {
+                $$ = $1;
+                pom++;
+                Compiler.EmitCode("brfalse licz{0}", pom);
+                Compiler.EmitCode("ldc.i4 1");
+                Compiler.EmitCode("br nielicz{0}", pom2 + 1);
+                Compiler.EmitCode("licz{0}:", pom);
+                Compiler.EmitCode("ldc.i4 0");
+            }
+           ;
+expLog    : myAnd And expLog
             {
                 if ($1 != 'b' || $3 != 'b')
                 {
@@ -281,7 +294,7 @@ expLog    : expLog And expRel
                     $$ = 'b';
                 }
             }
-            | expLog Or expRel
+            | myOr Or expLog
             {
                 if ($1 != 'b' || $3 != 'b')
                 {
@@ -388,7 +401,7 @@ log       : log SumLog log
                { $$ = $1; }
           ;
 factor    : OpenPar expLog ClosePar
-               { $$ = $2; }
+               { $$ = $2; Compiler.EmitCode("nielicz{0}:", ++pom2); }
           | Minus factor
           {
             if ($2 == 'b')
@@ -527,8 +540,12 @@ factor    : OpenPar expLog ClosePar
 
 string temp;
 string temp2;
+string temp3;
 int deeplevel = 0;
+int deeplevelElse = 0;
 string vari;
+int pom = 0;
+int pom2 = 0;
 
 public Parser(Scanner scanner) : base(scanner) { }
 
@@ -537,9 +554,9 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2, int line)
     char type = (type1=='i' && type2=='i') ? 'i' : 'd' ;
     if (type1 != type)
     {
-        Compiler.EmitCode("stloc temp");
+        Compiler.EmitCode("stloc _temp");
         Compiler.EmitCode("conv.r8");
-        Compiler.EmitCode("ldloc temp");
+        Compiler.EmitCode("ldloc _temp");
     }
     if (type2 != type)
         Compiler.EmitCode("conv.r8");

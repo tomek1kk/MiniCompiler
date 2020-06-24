@@ -14,8 +14,6 @@ public class Compiler
     public static List<string> source;
     public static Dictionary<string, string> symbolTable = new Dictionary<string, string>();
     
-    // arg[0] określa plik źródłowy
-    // pozostałe argumenty są ignorowane
     public static int Main(string[] args)
     {
         string file;
@@ -80,16 +78,17 @@ public class Compiler
     private static void GenProlog()
     {
         EmitCode(".assembly extern mscorlib { }");
-        EmitCode(".assembly calculator { }");
+        EmitCode(".assembly mini { }");
         EmitCode(".method static void main()");
         EmitCode("{");
         EmitCode(".entrypoint");
+        EmitCode(".maxstack 32");
         EmitCode(".try");
         EmitCode("{");
         EmitCode();
 
         EmitCode("// prolog");
-        EmitCode(".locals init ( float64 temp )");
+        EmitCode(".locals init ( float64 _temp )");
     }
 
     private static void GenEpilog()

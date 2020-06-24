@@ -1,6 +1,12 @@
-
 %using QUT.Gppg;
 %namespace GardensPoint
+%{
+	public override void yyerror(string msg, params object[] args)
+	{
+		Console.WriteLine("syntax error - program structure: program { code }");
+		Compiler.errors++;
+	}
+%}
 
 IntNumber   ([1-9][0-9]*)|0
 RealNumber  ([1-9][0-9]*\.[0-9]+)|(0\.[0-9]+)
@@ -52,7 +58,7 @@ Comment     "//"[^\n]*
 "(int)"		  { return (int)Tokens.IntConv; }
 "(double)"    { return (int)Tokens.DoubleConv; }
 "\r"          { }
-<<EOF>>       { return (int)Tokens.Eof; }
+<<EOF>>       { return (int)Tokens.EOF; }
 " "           { }
 "\t"          { }
 {PrintErr}    { return (int)Tokens.Error; }
@@ -61,3 +67,4 @@ Comment     "//"[^\n]*
 %{
   yylloc = new LexLocation(tokLin, tokCol, tokELin, tokECol);
 %}
+

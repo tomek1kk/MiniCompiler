@@ -6,9 +6,9 @@
 //
 //  GPLEX Version:  1.2.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 21.06.2020 13:10:54
+//  DateTime: 24.06.2020 16:42:50
 //  UserName: tomek
-//  GPLEX input file <../../kompilator.lex - 20.06.2020 16:33:56>
+//  GPLEX input file <../../kompilator.lex - 24.06.2020 16:38:56>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: parser, minimize
@@ -132,6 +132,11 @@ namespace GardensPoint
         const int INITIAL = 0;
 
 #region user code
+public override void yyerror(string msg, params object[] args)
+	{
+		Console.WriteLine("syntax error - program structure: program { code }");
+		Compiler.errors++;
+	}
 #endregion user code
 
         int state;
@@ -993,7 +998,7 @@ int NextState() {
         case eofNum:
             switch (currentStart) {
                 case 91:
-return (int)Tokens.Eof;
+return (int)Tokens.EOF;
                     break;
             }
             if (yywrap())
