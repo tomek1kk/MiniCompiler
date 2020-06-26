@@ -29,7 +29,11 @@ return   : Return Semicolon
             Compiler.EmitCode("leave EndMain");
           }
           ;
-stat      : write | assign | while | block | cond | return | read 
+stat      : write | assign Semicolon 
+            {
+                Compiler.EmitCode("pop");
+            }
+          | while | block | cond | return | read 
           | error
           {
                Console.WriteLine("  line {0,3}:  syntax error",@1.StartLine);
@@ -50,7 +54,7 @@ while     : While
                     temp = Compiler.NewTemp();
                 Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
             }
-            OpenPar expLog ClosePar 
+            OpenPar assign ClosePar 
             { 
                 Compiler.EmitCode("nielicz{0}:", ++pom2);
                 if (deeplevel == 1)
@@ -64,37 +68,34 @@ while     : While
                 deeplevel--;
             }
           ;
-ifhead     : If OpenPar expLog ClosePar
+ifhead     : If OpenPar assign ClosePar
             {
                 Compiler.EmitCode("nielicz{0}:", ++pom2);
                 deeplevel++;
-                if (deeplevel == 1)
-                    temp = Compiler.NewTemp();
-                Compiler.EmitCode("brfalse {0}", temp + "_" + deeplevel.ToString());
+                temp = Compiler.AddIfTemp();
+                Compiler.EmitCode("brfalse {0}", temp);
             }
             ;
 if        : ifhead
             stat
             { 
-                Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
-                deeplevel--;
+                temp = Compiler.GetIfTemp();
+                Compiler.EmitCode("{0}:", temp);
             }
           ;
 ifelse    : ifhead
             stat
             Else
             {
-               deeplevelElse++;
-                if (deeplevelElse == 1)
-                    temp2 = Compiler.NewTemp();
-                Compiler.EmitCode("br {0}", temp2 + "_" + deeplevelElse.ToString());
-                Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
+                temp = Compiler.GetElseTemp();
+                temp2 = Compiler.
+                Compiler.EmitCode("br {0}", temp);
+                Compiler.EmitCode("{0}:", temp);
             }
             stat
             {
                 Compiler.EmitCode("{0}:", temp2 + "_" + deeplevelElse.ToString());
-                deeplevel--;
-                deeplevelElse--;
+
             }
             ;
 declare   : Int Ident Semicolon
@@ -139,7 +140,7 @@ declare   : Int Ident Semicolon
                 }
             }
             ;
-write     : Write expLog Semicolon
+write     : Write assign Semicolon
             {
                 if ($2 == 'd')
                 {
@@ -225,50 +226,12 @@ assign    :  Ident Assign assign
                             Compiler.EmitCode("conv.r8");
                             $$ = 'd';
                         }
-                        
-                        Compiler.EmitCode("ldloc {0}", vari);
+                        Compiler.EmitCode("dup");
                         Compiler.EmitCode("stloc {0}", $1);
                     }
                }
             }
-            | Ident Assign expLog Semicolon
-            {
-               if (!Compiler.symbolTable.ContainsKey($1)) 
-               {
-                    Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
-                    Compiler.errors++;
-               }
-               else
-               {
-                    if (Compiler.symbolTable[$1]=="int" && $3 != 'i')
-                    {
-                        Console.WriteLine("line {0,3}:  semantic error - cannot convert to int (use convert operator)",@1.StartLine);
-                        ++Compiler.errors;
-                    } 
-                    else if (Compiler.symbolTable[$1]=="double" && $3 == 'b')
-                    {
-                        Console.WriteLine("line {0,3}:  semantic error - cannot convert to double (use convert operator)",@1.StartLine);
-                        ++Compiler.errors;
-                    }
-                    else if (Compiler.symbolTable[$1]=="bool" && $3 != 'b')
-                    {
-                        Console.WriteLine("line {0,3}:  semantic error - cannot convert to bool (use convert operator)",@1.StartLine);
-                        ++Compiler.errors;
-                    }
-                    else
-                    {
-                        $$ = $3;
-                        if (Compiler.symbolTable[$1]=="double" && $3 =='i')
-                        {
-                            Compiler.EmitCode("conv.r8");
-                            $$ = 'd';
-                        }
-                        vari = $1;
-                        Compiler.EmitCode("stloc {0}", $1);
-                        
-                    }
-               }
-            } 
+            | expLog { $$ = $1; }
           ;
 myAnd     : expRel
             {
@@ -411,7 +374,7 @@ log       : log SumLog log
           | factor
                { $$ = $1; }
           ;
-factor    : OpenPar expLog ClosePar
+factor    : OpenPar assign ClosePar
                { $$ = $2; Compiler.EmitCode("nielicz{0}:", ++pom2); }
           | Minus factor
           {
@@ -554,7 +517,7 @@ string temp2;
 string temp3;
 int deeplevel = 0;
 int deeplevelElse = 0;
-string vari;
+
 int pom = 0;
 int pom2 = 0;
 

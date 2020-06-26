@@ -70,9 +70,33 @@ public class Compiler
     }
     public static string NewTemp()
     {
-        return string.Format($"t{++nr}");
+        return string.Format($"t{nr}");
+    }
+    public static string AddIfTemp()
+    {
+        labelStack.Push(++nr);
+        return string.Format($"t{nr}");
+    }
+    public static string GetIfTemp()
+    {
+        int n = labelStack.Pop();
+        return string.Format($"t{n}");
+    }
+    public static string AddElseTemp()
+    {
+        elseLabelStack.Push(++nrE);
+        return string.Format($"t{nrE}");
+    }
+    public static string GetElseTemp()
+    {
+        int n = elseLabelStack.Pop();
+        return string.Format($"t{n}");
     }
     private static int nr = 0;
+    private static int nrE = 0;
+
+    private static Stack<int> labelStack = new Stack<int>();
+    private static Stack<int> elseLabelStack = new Stack<int>();
 
     private static StreamWriter sw;
 
