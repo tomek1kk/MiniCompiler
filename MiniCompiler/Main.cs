@@ -75,28 +75,41 @@ public class Compiler
     public static string AddIfTemp()
     {
         labelStack.Push(++nr);
-        return string.Format($"t{nr}");
+        return string.Format($"if{nr}");
     }
     public static string GetIfTemp()
     {
         int n = labelStack.Pop();
-        return string.Format($"t{n}");
+        return string.Format($"if{n}");
     }
     public static string AddElseTemp()
     {
         elseLabelStack.Push(++nrE);
-        return string.Format($"t{nrE}");
+        return string.Format($"else{nrE}");
     }
     public static string GetElseTemp()
     {
         int n = elseLabelStack.Pop();
-        return string.Format($"t{n}");
+        return string.Format($"else{n}");
     }
+    public static string AddWhileTemp()
+    {
+        whileLabelStack.Push(++nrW);
+        return string.Format($"while{nrW}");
+    }
+    public static string GetWhileTemp()
+    {
+        int n = whileLabelStack.Pop();
+        return string.Format($"while{n}");
+    }
+
     private static int nr = 0;
     private static int nrE = 0;
+    private static int nrW = 0;
 
     private static Stack<int> labelStack = new Stack<int>();
     private static Stack<int> elseLabelStack = new Stack<int>();
+    private static Stack<int> whileLabelStack = new Stack<int>();
 
     private static StreamWriter sw;
 

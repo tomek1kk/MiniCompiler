@@ -49,33 +49,30 @@ cond      : ifelse | if
           ;
 while     : While
             { 
-                deeplevel++;
-                if (deeplevel == 1)
-                    temp = Compiler.NewTemp();
-                Compiler.EmitCode("{0}:", temp + "_" + deeplevel.ToString());
+                temp = Compiler.AddWhileTemp();
+                Compiler.EmitCode("{0}:", temp);
             }
             OpenPar assign ClosePar 
             { 
                 Compiler.EmitCode("nielicz{0}:", ++pom2);
-                if (deeplevel == 1)
-                    temp3 = Compiler.NewTemp();
-                Compiler.EmitCode("brfalse {0}", temp3 + "_" + deeplevel.ToString()); 
+                temp = Compiler.AddIfTemp();
+                Compiler.EmitCode("brfalse {0}", temp); 
             }
             stat
             { 
-                Compiler.EmitCode("br {0}", temp + "_" + deeplevel.ToString());
-                Compiler.EmitCode("{0}:", temp3 + "_" + deeplevel.ToString());
-                deeplevel--;
+                temp = Compiler.GetWhileTemp();
+                Compiler.EmitCode("br {0}", temp);
+                temp = Compiler.GetIfTemp();
+                Compiler.EmitCode("{0}:", temp);
             }
           ;
-ifhead     : If OpenPar assign ClosePar
+ifhead    : If OpenPar assign ClosePar
             {
                 Compiler.EmitCode("nielicz{0}:", ++pom2);
-                deeplevel++;
                 temp = Compiler.AddIfTemp();
                 Compiler.EmitCode("brfalse {0}", temp);
             }
-            ;
+          ;
 if        : ifhead
             stat
             { 
@@ -87,15 +84,15 @@ ifelse    : ifhead
             stat
             Else
             {
-                temp = Compiler.GetElseTemp();
-                temp2 = Compiler.
-                Compiler.EmitCode("br {0}", temp);
+                temp = Compiler.GetIfTemp();
+                temp2 = Compiler.AddElseTemp();
+                Compiler.EmitCode("br {0}", temp2);
                 Compiler.EmitCode("{0}:", temp);
             }
             stat
             {
-                Compiler.EmitCode("{0}:", temp2 + "_" + deeplevelElse.ToString());
-
+                temp2 = Compiler.GetElseTemp();
+                Compiler.EmitCode("{0}:", temp2);
             }
             ;
 declare   : Int Ident Semicolon
@@ -514,9 +511,6 @@ factor    : OpenPar assign ClosePar
 
 string temp;
 string temp2;
-string temp3;
-int deeplevel = 0;
-int deeplevelElse = 0;
 
 int pom = 0;
 int pom2 = 0;
