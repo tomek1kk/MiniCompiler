@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 26.06.2020 18:14:35
+// DateTime: 27.06.2020 10:18:00
 // UserName: tomek
-// Input file <../../kompilator.y - 26.06.2020 18:14:32>
+// Input file <../../kompilator.y - 27.06.2020 10:17:59>
 
 // options: lines gplex
 
@@ -59,23 +59,23 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #pragma warning disable 649
   private static Dictionary<int, string> aliases;
 #pragma warning restore 649
-  private static Rule[] rules = new Rule[68];
-  private static State[] states = new State[121];
+  private static Rule[] rules = new Rule[70];
+  private static State[] states = new State[123];
   private static string[] nonTerms = new string[] {
       "code", "stat", "exp", "term", "factor", "declare", "cond", "while", "log", 
       "assign", "expLog", "expRel", "myAnd", "myOr", "start", "$accept", "declars", 
       "return", "write", "block", "read", "ifelse", "if", "Anon@1", "Anon@2", 
-      "ifhead", "Anon@3", };
+      "ifhead", "Anon@3", "Anon@4", "Anon@5", };
 
   static Parser() {
     states[0] = new State(new int[]{11,3},new int[]{-15,1});
     states[1] = new State(new int[]{3,2});
     states[2] = new State(-1);
     states[3] = new State(new int[]{24,4});
-    states[4] = new State(new int[]{19,9,20,12,21,15,18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118,25,-5},new int[]{-17,5,-6,7,-1,18,-2,120,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
+    states[4] = new State(new int[]{19,9,20,12,21,15,18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120,25,-5},new int[]{-17,5,-6,7,-1,18,-2,122,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
     states[5] = new State(new int[]{25,6});
     states[6] = new State(-2);
-    states[7] = new State(new int[]{19,9,20,12,21,15,18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118,25,-5},new int[]{-17,8,-6,7,-1,18,-2,120,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
+    states[7] = new State(new int[]{19,9,20,12,21,15,18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120,25,-5},new int[]{-17,8,-6,7,-1,18,-2,122,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
     states[8] = new State(-3);
     states[9] = new State(new int[]{39,10});
     states[10] = new State(new int[]{26,11});
@@ -86,109 +86,111 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     states[15] = new State(new int[]{39,16});
     states[16] = new State(new int[]{26,17});
     states[17] = new State(-30);
-    states[18] = new State(new int[]{18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118,25,-4},new int[]{-2,19,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
+    states[18] = new State(new int[]{18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120,25,-4},new int[]{-2,19,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
     states[19] = new State(-6);
     states[20] = new State(-9);
-    states[21] = new State(new int[]{42,24,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60},new int[]{-10,22,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
-    states[22] = new State(new int[]{26,23});
-    states[23] = new State(-31);
-    states[24] = new State(new int[]{26,25});
-    states[25] = new State(-32);
-    states[26] = new State(new int[]{4,27,9,-67,10,-67,7,-67,8,-67,5,-67,6,-67,29,-67,30,-67,31,-67,32,-67,33,-67,34,-67,26,-67,35,-67,36,-67,28,-67});
-    states[27] = new State(new int[]{39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60},new int[]{-10,28,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
-    states[28] = new State(-34);
-    states[29] = new State(-35);
-    states[30] = new State(new int[]{35,31});
-    states[31] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-11,32,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
-    states[32] = new State(-38);
-    states[33] = new State(new int[]{29,34,30,75,31,77,32,79,33,81,34,83,35,-36,36,-37,26,-40,28,-40});
-    states[34] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-3,35,-4,71,-9,70,-5,44});
-    states[35] = new State(new int[]{5,36,6,66,29,-41,30,-41,31,-41,32,-41,33,-41,34,-41,26,-41,35,-41,36,-41,28,-41});
-    states[36] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-4,37,-9,70,-5,44});
-    states[37] = new State(new int[]{7,38,8,68,5,-48,6,-48,29,-48,30,-48,31,-48,32,-48,33,-48,34,-48,26,-48,35,-48,36,-48,28,-48});
-    states[38] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-9,39,-5,44});
-    states[39] = new State(new int[]{9,40,10,42,7,-51,8,-51,5,-51,6,-51,29,-51,30,-51,31,-51,32,-51,33,-51,34,-51,26,-51,35,-51,36,-51,28,-51});
-    states[40] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-9,41,-5,44});
-    states[41] = new State(new int[]{9,40,10,42,7,-54,8,-54,5,-54,6,-54,29,-54,30,-54,31,-54,32,-54,33,-54,34,-54,26,-54,35,-54,36,-54,28,-54});
-    states[42] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-9,43,-5,44});
-    states[43] = new State(new int[]{9,40,10,42,7,-55,8,-55,5,-55,6,-55,29,-55,30,-55,31,-55,32,-55,33,-55,34,-55,26,-55,35,-55,36,-55,28,-55});
-    states[44] = new State(-56);
-    states[45] = new State(new int[]{19,48,20,62,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60},new int[]{-10,46,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
+    states[21] = new State(new int[]{42,85,39,-31,27,-31,6,-31,37,-31,38,-31,40,-31,41,-31,22,-31,23,-31},new int[]{-28,22});
+    states[22] = new State(new int[]{39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62},new int[]{-10,23,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
+    states[23] = new State(new int[]{26,24});
+    states[24] = new State(-32);
+    states[25] = new State(new int[]{4,26,9,-69,10,-69,7,-69,8,-69,5,-69,6,-69,29,-69,30,-69,31,-69,32,-69,33,-69,34,-69,26,-69,35,-69,36,-69,28,-69});
+    states[26] = new State(new int[]{39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62},new int[]{-10,27,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
+    states[27] = new State(-35);
+    states[28] = new State(-36);
+    states[29] = new State(new int[]{35,30});
+    states[30] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-11,31,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
+    states[31] = new State(-39);
+    states[32] = new State(new int[]{29,33,30,75,31,77,32,79,33,81,34,83,35,-37,36,-38,26,-41,28,-41});
+    states[33] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-3,34,-4,65,-9,64,-5,43});
+    states[34] = new State(new int[]{5,35,6,49,29,-42,30,-42,31,-42,32,-42,33,-42,34,-42,26,-42,35,-42,36,-42,28,-42});
+    states[35] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-4,36,-9,64,-5,43});
+    states[36] = new State(new int[]{7,37,8,51,5,-49,6,-49,29,-49,30,-49,31,-49,32,-49,33,-49,34,-49,26,-49,35,-49,36,-49,28,-49});
+    states[37] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-9,38,-5,43});
+    states[38] = new State(new int[]{9,39,10,41,7,-52,8,-52,5,-52,6,-52,29,-52,30,-52,31,-52,32,-52,33,-52,34,-52,26,-52,35,-52,36,-52,28,-52});
+    states[39] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-9,40,-5,43});
+    states[40] = new State(new int[]{9,39,10,41,7,-55,8,-55,5,-55,6,-55,29,-55,30,-55,31,-55,32,-55,33,-55,34,-55,26,-55,35,-55,36,-55,28,-55});
+    states[41] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-9,42,-5,43});
+    states[42] = new State(new int[]{9,39,10,41,7,-56,8,-56,5,-56,6,-56,29,-56,30,-56,31,-56,32,-56,33,-56,34,-56,26,-56,35,-56,36,-56,28,-56});
+    states[43] = new State(-57);
+    states[44] = new State(new int[]{19,69,20,72,39,-58,27,-58,6,-58,37,-58,38,-58,40,-58,41,-58,22,-58,23,-58},new int[]{-29,45});
+    states[45] = new State(new int[]{39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62},new int[]{-10,46,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
     states[46] = new State(new int[]{28,47});
-    states[47] = new State(-57);
-    states[48] = new State(new int[]{28,49});
-    states[49] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-5,50});
-    states[50] = new State(-61);
-    states[51] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-5,52});
-    states[52] = new State(-58);
-    states[53] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-5,54});
-    states[54] = new State(-59);
-    states[55] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-5,56});
-    states[56] = new State(-60);
-    states[57] = new State(-63);
-    states[58] = new State(-64);
+    states[47] = new State(-59);
+    states[48] = new State(new int[]{5,35,6,49,29,-48,30,-48,31,-48,32,-48,33,-48,34,-48,26,-48,35,-48,36,-48,28,-48});
+    states[49] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-4,50,-9,64,-5,43});
+    states[50] = new State(new int[]{7,37,8,51,5,-50,6,-50,29,-50,30,-50,31,-50,32,-50,33,-50,34,-50,26,-50,35,-50,36,-50,28,-50});
+    states[51] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-9,52,-5,43});
+    states[52] = new State(new int[]{9,39,10,41,7,-53,8,-53,5,-53,6,-53,29,-53,30,-53,31,-53,32,-53,33,-53,34,-53,26,-53,35,-53,36,-53,28,-53});
+    states[53] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-5,54});
+    states[54] = new State(-60);
+    states[55] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-5,56});
+    states[56] = new State(-61);
+    states[57] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-5,58});
+    states[58] = new State(-62);
     states[59] = new State(-65);
     states[60] = new State(-66);
     states[61] = new State(-67);
-    states[62] = new State(new int[]{28,63});
-    states[63] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-5,64});
-    states[64] = new State(-62);
-    states[65] = new State(new int[]{5,36,6,66,29,-47,30,-47,31,-47,32,-47,33,-47,34,-47,26,-47,35,-47,36,-47,28,-47});
-    states[66] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-4,67,-9,70,-5,44});
-    states[67] = new State(new int[]{7,38,8,68,5,-49,6,-49,29,-49,30,-49,31,-49,32,-49,33,-49,34,-49,26,-49,35,-49,36,-49,28,-49});
-    states[68] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-9,69,-5,44});
-    states[69] = new State(new int[]{9,40,10,42,7,-52,8,-52,5,-52,6,-52,29,-52,30,-52,31,-52,32,-52,33,-52,34,-52,26,-52,35,-52,36,-52,28,-52});
-    states[70] = new State(new int[]{9,40,10,42,7,-53,8,-53,5,-53,6,-53,29,-53,30,-53,31,-53,32,-53,33,-53,34,-53,26,-53,35,-53,36,-53,28,-53});
-    states[71] = new State(new int[]{7,38,8,68,5,-50,6,-50,29,-50,30,-50,31,-50,32,-50,33,-50,34,-50,26,-50,35,-50,36,-50,28,-50});
-    states[72] = new State(new int[]{36,73});
-    states[73] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-11,74,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
-    states[74] = new State(-39);
-    states[75] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-3,76,-4,71,-9,70,-5,44});
-    states[76] = new State(new int[]{5,36,6,66,29,-42,30,-42,31,-42,32,-42,33,-42,34,-42,26,-42,35,-42,36,-42,28,-42});
-    states[77] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-3,78,-4,71,-9,70,-5,44});
-    states[78] = new State(new int[]{5,36,6,66,29,-43,30,-43,31,-43,32,-43,33,-43,34,-43,26,-43,35,-43,36,-43,28,-43});
-    states[79] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-3,80,-4,71,-9,70,-5,44});
-    states[80] = new State(new int[]{5,36,6,66,29,-44,30,-44,31,-44,32,-44,33,-44,34,-44,26,-44,35,-44,36,-44,28,-44});
-    states[81] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-3,82,-4,71,-9,70,-5,44});
-    states[82] = new State(new int[]{5,36,6,66,29,-45,30,-45,31,-45,32,-45,33,-45,34,-45,26,-45,35,-45,36,-45,28,-45});
-    states[83] = new State(new int[]{27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,39,61},new int[]{-3,84,-4,71,-9,70,-5,44});
-    states[84] = new State(new int[]{5,36,6,66,29,-46,30,-46,31,-46,32,-46,33,-46,34,-46,26,-46,35,-46,36,-46,28,-46});
+    states[62] = new State(-68);
+    states[63] = new State(-69);
+    states[64] = new State(new int[]{9,39,10,41,7,-54,8,-54,5,-54,6,-54,29,-54,30,-54,31,-54,32,-54,33,-54,34,-54,26,-54,35,-54,36,-54,28,-54});
+    states[65] = new State(new int[]{7,37,8,51,5,-51,6,-51,29,-51,30,-51,31,-51,32,-51,33,-51,34,-51,26,-51,35,-51,36,-51,28,-51});
+    states[66] = new State(new int[]{36,67});
+    states[67] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-11,68,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
+    states[68] = new State(-40);
+    states[69] = new State(new int[]{28,70});
+    states[70] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-5,71});
+    states[71] = new State(-63);
+    states[72] = new State(new int[]{28,73});
+    states[73] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-5,74});
+    states[74] = new State(-64);
+    states[75] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-3,76,-4,65,-9,64,-5,43});
+    states[76] = new State(new int[]{5,35,6,49,29,-43,30,-43,31,-43,32,-43,33,-43,34,-43,26,-43,35,-43,36,-43,28,-43});
+    states[77] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-3,78,-4,65,-9,64,-5,43});
+    states[78] = new State(new int[]{5,35,6,49,29,-44,30,-44,31,-44,32,-44,33,-44,34,-44,26,-44,35,-44,36,-44,28,-44});
+    states[79] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-3,80,-4,65,-9,64,-5,43});
+    states[80] = new State(new int[]{5,35,6,49,29,-45,30,-45,31,-45,32,-45,33,-45,34,-45,26,-45,35,-45,36,-45,28,-45});
+    states[81] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-3,82,-4,65,-9,64,-5,43});
+    states[82] = new State(new int[]{5,35,6,49,29,-46,30,-46,31,-46,32,-46,33,-46,34,-46,26,-46,35,-46,36,-46,28,-46});
+    states[83] = new State(new int[]{27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,39,63},new int[]{-3,84,-4,65,-9,64,-5,43});
+    states[84] = new State(new int[]{5,35,6,49,29,-47,30,-47,31,-47,32,-47,33,-47,34,-47,26,-47,35,-47,36,-47,28,-47});
     states[85] = new State(new int[]{26,86});
-    states[86] = new State(-10);
-    states[87] = new State(-11);
-    states[88] = new State(-21,new int[]{-24,89});
-    states[89] = new State(new int[]{27,90});
-    states[90] = new State(new int[]{39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60},new int[]{-10,91,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
-    states[91] = new State(new int[]{28,92});
-    states[92] = new State(-22,new int[]{-25,93});
-    states[93] = new State(new int[]{18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118},new int[]{-2,94,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
-    states[94] = new State(-23);
-    states[95] = new State(-12);
-    states[96] = new State(new int[]{25,119,18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118},new int[]{-1,97,-2,120,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
-    states[97] = new State(new int[]{25,98,18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118},new int[]{-2,19,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
-    states[98] = new State(-17);
-    states[99] = new State(-13);
-    states[100] = new State(-19);
-    states[101] = new State(new int[]{18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118},new int[]{-2,102,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
-    states[102] = new State(new int[]{15,103,18,-25,39,-25,27,-25,6,-25,37,-25,38,-25,40,-25,41,-25,22,-25,23,-25,16,-25,24,-25,14,-25,12,-25,17,-25,2,-25,25,-25});
-    states[103] = new State(-26,new int[]{-27,104});
-    states[104] = new State(new int[]{18,21,39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60,16,88,24,96,14,106,12,112,17,115,2,118},new int[]{-2,105,-19,20,-10,85,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72,-8,87,-20,95,-7,99,-22,100,-26,101,-23,110,-18,111,-21,114});
-    states[105] = new State(-27);
-    states[106] = new State(new int[]{27,107});
-    states[107] = new State(new int[]{39,26,27,45,6,51,37,53,38,55,40,57,41,58,22,59,23,60},new int[]{-10,108,-11,29,-13,30,-12,33,-3,65,-4,71,-9,70,-5,44,-14,72});
-    states[108] = new State(new int[]{28,109});
-    states[109] = new State(-24);
-    states[110] = new State(-20);
-    states[111] = new State(-14);
-    states[112] = new State(new int[]{26,113});
-    states[113] = new State(-8);
-    states[114] = new State(-15);
-    states[115] = new State(new int[]{39,116});
-    states[116] = new State(new int[]{26,117});
-    states[117] = new State(-33);
-    states[118] = new State(-16);
-    states[119] = new State(-18);
-    states[120] = new State(-7);
+    states[86] = new State(-33);
+    states[87] = new State(new int[]{26,88});
+    states[88] = new State(-10);
+    states[89] = new State(-11);
+    states[90] = new State(-21,new int[]{-24,91});
+    states[91] = new State(new int[]{27,92});
+    states[92] = new State(new int[]{39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62},new int[]{-10,93,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
+    states[93] = new State(new int[]{28,94});
+    states[94] = new State(-22,new int[]{-25,95});
+    states[95] = new State(new int[]{18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120},new int[]{-2,96,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
+    states[96] = new State(-23);
+    states[97] = new State(-12);
+    states[98] = new State(new int[]{25,121,18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120},new int[]{-1,99,-2,122,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
+    states[99] = new State(new int[]{25,100,18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120},new int[]{-2,19,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
+    states[100] = new State(-17);
+    states[101] = new State(-13);
+    states[102] = new State(-19);
+    states[103] = new State(new int[]{18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120},new int[]{-2,104,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
+    states[104] = new State(new int[]{15,105,18,-25,39,-25,27,-25,6,-25,37,-25,38,-25,40,-25,41,-25,22,-25,23,-25,16,-25,24,-25,14,-25,12,-25,17,-25,2,-25,25,-25});
+    states[105] = new State(-26,new int[]{-27,106});
+    states[106] = new State(new int[]{18,21,39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62,16,90,24,98,14,108,12,114,17,117,2,120},new int[]{-2,107,-19,20,-10,87,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66,-8,89,-20,97,-7,101,-22,102,-26,103,-23,112,-18,113,-21,116});
+    states[107] = new State(-27);
+    states[108] = new State(new int[]{27,109});
+    states[109] = new State(new int[]{39,25,27,44,6,53,37,55,38,57,40,59,41,60,22,61,23,62},new int[]{-10,110,-11,28,-13,29,-12,32,-3,48,-4,65,-9,64,-5,43,-14,66});
+    states[110] = new State(new int[]{28,111});
+    states[111] = new State(-24);
+    states[112] = new State(-20);
+    states[113] = new State(-14);
+    states[114] = new State(new int[]{26,115});
+    states[115] = new State(-8);
+    states[116] = new State(-15);
+    states[117] = new State(new int[]{39,118});
+    states[118] = new State(new int[]{26,119});
+    states[119] = new State(-34);
+    states[120] = new State(-16);
+    states[121] = new State(-18);
+    states[122] = new State(-7);
 
     for (int sNo = 0; sNo < states.Length; sNo++) states[sNo].number = sNo;
 
@@ -222,43 +224,45 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
     rules[28] = new Rule(-6, new int[]{19,39,26});
     rules[29] = new Rule(-6, new int[]{20,39,26});
     rules[30] = new Rule(-6, new int[]{21,39,26});
-    rules[31] = new Rule(-19, new int[]{18,-10,26});
-    rules[32] = new Rule(-19, new int[]{18,42,26});
-    rules[33] = new Rule(-21, new int[]{17,39,26});
-    rules[34] = new Rule(-10, new int[]{39,4,-10});
-    rules[35] = new Rule(-10, new int[]{-11});
-    rules[36] = new Rule(-13, new int[]{-12});
-    rules[37] = new Rule(-14, new int[]{-12});
-    rules[38] = new Rule(-11, new int[]{-13,35,-11});
-    rules[39] = new Rule(-11, new int[]{-14,36,-11});
-    rules[40] = new Rule(-11, new int[]{-12});
-    rules[41] = new Rule(-12, new int[]{-12,29,-3});
-    rules[42] = new Rule(-12, new int[]{-12,30,-3});
-    rules[43] = new Rule(-12, new int[]{-12,31,-3});
-    rules[44] = new Rule(-12, new int[]{-12,32,-3});
-    rules[45] = new Rule(-12, new int[]{-12,33,-3});
-    rules[46] = new Rule(-12, new int[]{-12,34,-3});
-    rules[47] = new Rule(-12, new int[]{-3});
-    rules[48] = new Rule(-3, new int[]{-3,5,-4});
-    rules[49] = new Rule(-3, new int[]{-3,6,-4});
-    rules[50] = new Rule(-3, new int[]{-4});
-    rules[51] = new Rule(-4, new int[]{-4,7,-9});
-    rules[52] = new Rule(-4, new int[]{-4,8,-9});
-    rules[53] = new Rule(-4, new int[]{-9});
-    rules[54] = new Rule(-9, new int[]{-9,9,-9});
-    rules[55] = new Rule(-9, new int[]{-9,10,-9});
-    rules[56] = new Rule(-9, new int[]{-5});
-    rules[57] = new Rule(-5, new int[]{27,-10,28});
-    rules[58] = new Rule(-5, new int[]{6,-5});
-    rules[59] = new Rule(-5, new int[]{37,-5});
-    rules[60] = new Rule(-5, new int[]{38,-5});
-    rules[61] = new Rule(-5, new int[]{27,19,28,-5});
-    rules[62] = new Rule(-5, new int[]{27,20,28,-5});
-    rules[63] = new Rule(-5, new int[]{40});
-    rules[64] = new Rule(-5, new int[]{41});
-    rules[65] = new Rule(-5, new int[]{22});
-    rules[66] = new Rule(-5, new int[]{23});
-    rules[67] = new Rule(-5, new int[]{39});
+    rules[31] = new Rule(-28, new int[]{});
+    rules[32] = new Rule(-19, new int[]{18,-28,-10,26});
+    rules[33] = new Rule(-19, new int[]{18,42,26});
+    rules[34] = new Rule(-21, new int[]{17,39,26});
+    rules[35] = new Rule(-10, new int[]{39,4,-10});
+    rules[36] = new Rule(-10, new int[]{-11});
+    rules[37] = new Rule(-13, new int[]{-12});
+    rules[38] = new Rule(-14, new int[]{-12});
+    rules[39] = new Rule(-11, new int[]{-13,35,-11});
+    rules[40] = new Rule(-11, new int[]{-14,36,-11});
+    rules[41] = new Rule(-11, new int[]{-12});
+    rules[42] = new Rule(-12, new int[]{-12,29,-3});
+    rules[43] = new Rule(-12, new int[]{-12,30,-3});
+    rules[44] = new Rule(-12, new int[]{-12,31,-3});
+    rules[45] = new Rule(-12, new int[]{-12,32,-3});
+    rules[46] = new Rule(-12, new int[]{-12,33,-3});
+    rules[47] = new Rule(-12, new int[]{-12,34,-3});
+    rules[48] = new Rule(-12, new int[]{-3});
+    rules[49] = new Rule(-3, new int[]{-3,5,-4});
+    rules[50] = new Rule(-3, new int[]{-3,6,-4});
+    rules[51] = new Rule(-3, new int[]{-4});
+    rules[52] = new Rule(-4, new int[]{-4,7,-9});
+    rules[53] = new Rule(-4, new int[]{-4,8,-9});
+    rules[54] = new Rule(-4, new int[]{-9});
+    rules[55] = new Rule(-9, new int[]{-9,9,-9});
+    rules[56] = new Rule(-9, new int[]{-9,10,-9});
+    rules[57] = new Rule(-9, new int[]{-5});
+    rules[58] = new Rule(-29, new int[]{});
+    rules[59] = new Rule(-5, new int[]{27,-29,-10,28});
+    rules[60] = new Rule(-5, new int[]{6,-5});
+    rules[61] = new Rule(-5, new int[]{37,-5});
+    rules[62] = new Rule(-5, new int[]{38,-5});
+    rules[63] = new Rule(-5, new int[]{27,19,28,-5});
+    rules[64] = new Rule(-5, new int[]{27,20,28,-5});
+    rules[65] = new Rule(-5, new int[]{40});
+    rules[66] = new Rule(-5, new int[]{41});
+    rules[67] = new Rule(-5, new int[]{22});
+    rules[68] = new Rule(-5, new int[]{23});
+    rules[69] = new Rule(-5, new int[]{39});
   }
 
   protected override void Initialize() {
@@ -410,7 +414,12 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 31: // write -> Write, assign, Semicolon
+      case 31: // Anon@4 -> /* empty */
+#line 140 "../../kompilator.y"
+                  { Compiler.AddParTemp(); }
+#line default
+        break;
+      case 32: // write -> Write, Anon@4, assign, Semicolon
 #line 141 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-2].type == 'd')
@@ -435,7 +444,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 32: // write -> Write, String, Semicolon
+      case 33: // write -> Write, String, Semicolon
 #line 163 "../../kompilator.y"
             {
                 Compiler.EmitCode("ldstr {0}", ValueStack[ValueStack.Depth-2].val);
@@ -443,7 +452,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 33: // read -> Read, Ident, Semicolon
+      case 34: // read -> Read, Ident, Semicolon
 #line 169 "../../kompilator.y"
             {
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-2].val)) 
@@ -471,7 +480,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 34: // assign -> Ident, Assign, assign
+      case 35: // assign -> Ident, Assign, assign
 #line 195 "../../kompilator.y"
           {       
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-3].val)) 
@@ -511,39 +520,40 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 35: // assign -> expLog
-#line 231 "../../kompilator.y"
-                     { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
+      case 36: // assign -> expLog
+#line 233 "../../kompilator.y"
+            { 
+                CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
+            }
 #line default
         break;
-      case 36: // myAnd -> expRel
-#line 234 "../../kompilator.y"
+      case 37: // myAnd -> expRel
+#line 239 "../../kompilator.y"
             {
                 CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
-                pom++;
-                Compiler.EmitCode("brtrue licz{0}", pom);
+                Compiler.EmitCode("brtrue licz{0}", ++pom);
                 Compiler.EmitCode("ldc.i4 0");
-                Compiler.EmitCode("br nielicz{0}", pom2 + 1);
+                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
                 Compiler.EmitCode("licz{0}:", pom);
                 Compiler.EmitCode("ldc.i4 1");
             }
 #line default
         break;
-      case 37: // myOr -> expRel
-#line 245 "../../kompilator.y"
+      case 38: // myOr -> expRel
+#line 249 "../../kompilator.y"
             {
                 CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
-                pom++;
-                Compiler.EmitCode("brfalse licz{0}", pom);
+                Compiler.EmitCode("brfalse licz{0}", ++pom);
                 Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("br nielicz{0}", pom2 + 1);
+                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
                 Compiler.EmitCode("licz{0}:", pom);
                 Compiler.EmitCode("ldc.i4 0");
             }
 #line default
         break;
-      case 38: // expLog -> myAnd, And, expLog
-#line 256 "../../kompilator.y"
+      case 39: // expLog -> myAnd, And, expLog
+#line 259 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type != 'b' || ValueStack[ValueStack.Depth-1].type != 'b')
                 {
@@ -558,8 +568,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 39: // expLog -> myOr, Or, expLog
-#line 269 "../../kompilator.y"
+      case 40: // expLog -> myOr, Or, expLog
+#line 272 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type != 'b' || ValueStack[ValueStack.Depth-1].type != 'b')
                 {
@@ -574,13 +584,13 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 40: // expLog -> expRel
-#line 281 "../../kompilator.y"
+      case 41: // expLog -> expRel
+#line 284 "../../kompilator.y"
                      { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
-      case 41: // expRel -> expRel, Equal, exp
-#line 284 "../../kompilator.y"
+      case 42: // expRel -> expRel, Equal, exp
+#line 287 "../../kompilator.y"
             {
                 if ((ValueStack[ValueStack.Depth-3].type == 'b' && ValueStack[ValueStack.Depth-1].type != 'b') || (ValueStack[ValueStack.Depth-3].type != 'b' && ValueStack[ValueStack.Depth-1].type == 'b'))
                 {
@@ -595,8 +605,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 42: // expRel -> expRel, NotEqual, exp
-#line 297 "../../kompilator.y"
+      case 43: // expRel -> expRel, NotEqual, exp
+#line 300 "../../kompilator.y"
             {
                 if ((ValueStack[ValueStack.Depth-3].type == 'b' && ValueStack[ValueStack.Depth-1].type != 'b') || (ValueStack[ValueStack.Depth-3].type != 'b' && ValueStack[ValueStack.Depth-1].type == 'b'))
                 {
@@ -612,8 +622,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 43: // expRel -> expRel, Greater, exp
-#line 311 "../../kompilator.y"
+      case 44: // expRel -> expRel, Greater, exp
+#line 314 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type == 'b' || ValueStack[ValueStack.Depth-1].type == 'b')
                 {
@@ -628,8 +638,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 44: // expRel -> expRel, GreaterEqual, exp
-#line 324 "../../kompilator.y"
+      case 45: // expRel -> expRel, GreaterEqual, exp
+#line 327 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type == 'b' || ValueStack[ValueStack.Depth-1].type == 'b')
                 {
@@ -646,16 +656,16 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 45: // expRel -> expRel, Less, exp
-#line 339 "../../kompilator.y"
+      case 46: // expRel -> expRel, Less, exp
+#line 342 "../../kompilator.y"
             {
                 Compiler.EmitCode("clt");
                 CurrentSemanticValue.type = 'b';
             }
 #line default
         break;
-      case 46: // expRel -> expRel, LessEqual, exp
-#line 344 "../../kompilator.y"
+      case 47: // expRel -> expRel, LessEqual, exp
+#line 347 "../../kompilator.y"
             {
                 Compiler.EmitCode("ldc.i4 1");
                 Compiler.EmitCode("add");
@@ -664,63 +674,73 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
             }
 #line default
         break;
-      case 47: // expRel -> exp
-#line 350 "../../kompilator.y"
+      case 48: // expRel -> exp
+#line 353 "../../kompilator.y"
                   { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
-      case 48: // exp -> exp, Plus, term
-#line 353 "../../kompilator.y"
+      case 49: // exp -> exp, Plus, term
+#line 356 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Plus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
-      case 49: // exp -> exp, Minus, term
-#line 355 "../../kompilator.y"
+      case 50: // exp -> exp, Minus, term
+#line 358 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Minus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
-      case 50: // exp -> term
-#line 357 "../../kompilator.y"
+      case 51: // exp -> term
+#line 360 "../../kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
-      case 51: // term -> term, Multiplies, log
-#line 361 "../../kompilator.y"
+      case 52: // term -> term, Multiplies, log
+#line 364 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Multiplies, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
-      case 52: // term -> term, Divides, log
-#line 363 "../../kompilator.y"
+      case 53: // term -> term, Divides, log
+#line 366 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Divides, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
-      case 53: // term -> log
-#line 365 "../../kompilator.y"
+      case 54: // term -> log
+#line 368 "../../kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
-      case 54: // log -> log, SumLog, log
-#line 368 "../../kompilator.y"
+      case 55: // log -> log, SumLog, log
+#line 371 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.SumLog, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
-      case 55: // log -> log, IlLog, log
-#line 370 "../../kompilator.y"
+      case 56: // log -> log, IlLog, log
+#line 373 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.IlLog, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
-      case 56: // log -> factor
-#line 372 "../../kompilator.y"
+      case 57: // log -> factor
+#line 375 "../../kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
-      case 57: // factor -> OpenPar, assign, ClosePar
-#line 375 "../../kompilator.y"
-               { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-2].type; Compiler.EmitCode("nielicz{0}:", ++pom2); }
+      case 58: // Anon@5 -> /* empty */
+#line 378 "../../kompilator.y"
+          {
+            Compiler.AddParTemp();
+          }
 #line default
         break;
-      case 58: // factor -> Minus, factor
-#line 377 "../../kompilator.y"
+      case 59: // factor -> OpenPar, Anon@5, assign, ClosePar
+#line 383 "../../kompilator.y"
+          { 
+            CurrentSemanticValue.type = ValueStack[ValueStack.Depth-2].type; 
+            Compiler.EmitCode("{0}:", Compiler.GetParTemp());
+          }
+#line default
+        break;
+      case 60: // factor -> Minus, factor
+#line 388 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'b')
             {
@@ -735,8 +755,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 59: // factor -> Exclamation, factor
-#line 390 "../../kompilator.y"
+      case 61: // factor -> Exclamation, factor
+#line 401 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'b')
             {
@@ -752,8 +772,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 60: // factor -> Neg, factor
-#line 404 "../../kompilator.y"
+      case 62: // factor -> Neg, factor
+#line 415 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type != 'i')
             {
@@ -768,8 +788,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 61: // factor -> OpenPar, Int, ClosePar, factor
-#line 417 "../../kompilator.y"
+      case 63: // factor -> OpenPar, Int, ClosePar, factor
+#line 428 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'd')
             {
@@ -792,8 +812,8 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 62: // factor -> OpenPar, Double, ClosePar, factor
-#line 438 "../../kompilator.y"
+      case 64: // factor -> OpenPar, Double, ClosePar, factor
+#line 449 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'd')
             {
@@ -817,16 +837,16 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 63: // factor -> IntNumber
-#line 460 "../../kompilator.y"
+      case 65: // factor -> IntNumber
+#line 471 "../../kompilator.y"
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse(ValueStack[ValueStack.Depth-1].val));
                CurrentSemanticValue.type = 'i'; 
           }
 #line default
         break;
-      case 64: // factor -> RealNumber
-#line 465 "../../kompilator.y"
+      case 66: // factor -> RealNumber
+#line 476 "../../kompilator.y"
           {
                double d = double.Parse(ValueStack[ValueStack.Depth-1].val,System.Globalization.CultureInfo.InvariantCulture);
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
@@ -834,24 +854,24 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
           }
 #line default
         break;
-      case 65: // factor -> True
-#line 471 "../../kompilator.y"
+      case 67: // factor -> True
+#line 482 "../../kompilator.y"
           {
                 Compiler.EmitCode("ldc.i4 1");
                 CurrentSemanticValue.type = 'b';
           }
 #line default
         break;
-      case 66: // factor -> False
-#line 476 "../../kompilator.y"
+      case 68: // factor -> False
+#line 487 "../../kompilator.y"
           {
                 Compiler.EmitCode("ldc.i4 0");
                 CurrentSemanticValue.type = 'b';
           }
 #line default
         break;
-      case 67: // factor -> Ident
-#line 481 "../../kompilator.y"
+      case 69: // factor -> Ident
+#line 492 "../../kompilator.y"
           {
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-1].val)) 
                {
@@ -895,7 +915,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
         return CharToString((char)terminal);
   }
 
-#line 511 "../../kompilator.y"
+#line 522 "../../kompilator.y"
 
 string temp;
 string temp2;

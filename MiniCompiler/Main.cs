@@ -102,14 +102,31 @@ public class Compiler
         int n = whileLabelStack.Pop();
         return string.Format($"while{n}");
     }
+    public static string AddParTemp()
+    {
+        parStack.Push(++nrP);
+        return string.Format($"par{nrP}");
+    }
+    public static string GetParTemp()
+    {
+        int n = parStack.Pop();
+        return string.Format($"par{n}");
+    }
 
+    public static string CheckParTemp()
+    {
+        return string.Format($"par{parStack.Peek()}");
+    }
+    
     private static int nr = 0;
     private static int nrE = 0;
     private static int nrW = 0;
+    private static int nrP = 0;
 
     private static Stack<int> labelStack = new Stack<int>();
     private static Stack<int> elseLabelStack = new Stack<int>();
     private static Stack<int> whileLabelStack = new Stack<int>();
+    private static Stack<int> parStack = new Stack<int>();
 
     private static StreamWriter sw;
 

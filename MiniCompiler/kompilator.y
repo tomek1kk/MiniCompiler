@@ -228,15 +228,19 @@ assign    :  Ident Assign assign
                     }
                }
             }
-            | expLog { $$ = $1; }
+            |
+            expLog 
+            { 
+                $$ = $1;
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
+            }
           ;
 myAnd     : expRel
             {
                 $$ = $1;
-                pom++;
-                Compiler.EmitCode("brtrue licz{0}", pom);
+                Compiler.EmitCode("brtrue licz{0}", ++pom);
                 Compiler.EmitCode("ldc.i4 0");
-                Compiler.EmitCode("br nielicz{0}", pom2 + 1);
+                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
                 Compiler.EmitCode("licz{0}:", pom);
                 Compiler.EmitCode("ldc.i4 1");
             }
@@ -244,10 +248,9 @@ myAnd     : expRel
 myOr      : expRel
             {
                 $$ = $1;
-                pom++;
-                Compiler.EmitCode("brfalse licz{0}", pom);
+                Compiler.EmitCode("brfalse licz{0}", ++pom);
                 Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("br nielicz{0}", pom2 + 1);
+                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
                 Compiler.EmitCode("licz{0}:", pom);
                 Compiler.EmitCode("ldc.i4 0");
             }
@@ -371,8 +374,16 @@ log       : log SumLog log
           | factor
                { $$ = $1; }
           ;
-factor    : OpenPar assign ClosePar
-               { $$ = $2; Compiler.EmitCode("nielicz{0}:", ++pom2); }
+factor    : OpenPar
+          {
+            Compiler.AddParTemp();
+          }
+            assign
+            ClosePar
+          { 
+            $$ = $3; 
+            Compiler.EmitCode("{0}:", Compiler.GetParTemp());
+          }
           | Minus factor
           {
             if ($2 == 'b')
