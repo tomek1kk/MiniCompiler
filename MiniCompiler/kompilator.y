@@ -238,26 +238,25 @@ assign    :  Ident Assign assign
 myAnd     : expRel
             {
                 $$ = $1;
-                Compiler.EmitCode("brtrue licz{0}", ++pom);
-                Compiler.EmitCode("ldc.i4 0");
-                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
-                Compiler.EmitCode("licz{0}:", pom);
-                Compiler.EmitCode("ldc.i4 1");
             }
             ;
 myOr      : expRel
             {
                 $$ = $1;
-                Compiler.EmitCode("brfalse licz{0}", ++pom);
-                Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
-                Compiler.EmitCode("licz{0}:", pom);
-                Compiler.EmitCode("ldc.i4 0");
             }
            ;
-expLog    : myAnd And expLog
+expLog    : expLog 
+            {                
+                Compiler.AddParTemp(); 
+                Compiler.EmitCode("brtrue licz{0}", ++pom);
+                Compiler.EmitCode("ldc.i4 0");
+                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
+                Compiler.EmitCode("licz{0}:", pom);
+                Compiler.EmitCode("ldc.i4 1");  
+            } 
+            And myAnd
             {
-                if ($1 != 'b' || $3 != 'b')
+                if ($1 != 'b' || $4 != 'b')
                 {
                     Console.WriteLine("line {0,3}:  semantic error - && operator can be used to bool arguments",@1.StartLine);
                     ++Compiler.errors;
@@ -265,12 +264,22 @@ expLog    : myAnd And expLog
                 else
                 {
                     Compiler.EmitCode("and");
+                    Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                     $$ = 'b';
                 }
             }
-            | myOr Or expLog
+            | expLog
             {
-                if ($1 != 'b' || $3 != 'b')
+                Compiler.AddParTemp(); 
+                Compiler.EmitCode("brfalse licz{0}", ++pom);
+                Compiler.EmitCode("ldc.i4 1");
+                Compiler.EmitCode("br {0}", Compiler.CheckParTemp());
+                Compiler.EmitCode("licz{0}:", pom);
+                Compiler.EmitCode("ldc.i4 0");
+            }
+            Or myOr
+            {
+                if ($1 != 'b' || $4 != 'b')
                 {
                     Console.WriteLine("line {0,3}:  semantic error - || operator can be used to bool arguments",@1.StartLine);
                     ++Compiler.errors;
