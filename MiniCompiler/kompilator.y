@@ -31,6 +31,7 @@ return   : Return Semicolon
           ;
 stat      : write | assign Semicolon 
             {
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp()); // sprawdzic kolejnosc tych 2
                 Compiler.EmitCode("pop");
             }
           | while | block | cond | return | read 
@@ -54,7 +55,7 @@ while     : While
             }
             OpenPar assign ClosePar 
             { 
-                Compiler.EmitCode("nielicz{0}:", ++pom2);
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 temp = Compiler.AddIfTemp();
                 Compiler.EmitCode("brfalse {0}", temp); 
             }
@@ -68,7 +69,7 @@ while     : While
           ;
 ifhead    : If OpenPar assign ClosePar
             {
-                Compiler.EmitCode("nielicz{0}:", ++pom2);
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 temp = Compiler.AddIfTemp();
                 Compiler.EmitCode("brfalse {0}", temp);
             }
@@ -228,11 +229,9 @@ assign    :  Ident Assign assign
                     }
                }
             }
-            |
-            expLog 
+            | expLog 
             { 
                 $$ = $1;
-                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
             }
           ;
 myAnd     : expRel
@@ -292,6 +291,8 @@ expRel    : expRel Equal exp
                 }
                 else
                 {
+                    if ($1 != 'b' || $3 != 'b')
+                        CheckTypes($1, $3);
                     Compiler.EmitCode("ceq");
                     $$ = 'b';
                 }
@@ -305,8 +306,11 @@ expRel    : expRel Equal exp
                 }
                 else
                 {
+                    if ($1 != 'b' || $3 != 'b')
+                        CheckTypes($1, $3);
                     Compiler.EmitCode("ceq");
-                    Compiler.EmitCode("neg");
+                    Compiler.EmitCode("ldc.i4 1");
+                    Compiler.EmitCode("xor");
                     $$ = 'b';
                 }
             }
@@ -319,6 +323,7 @@ expRel    : expRel Equal exp
                 }
                 else
                 {
+                    CheckTypes($1, $3);
                     Compiler.EmitCode("cgt");
                     $$ = 'b';
                 }
@@ -332,21 +337,30 @@ expRel    : expRel Equal exp
                 }
                 else
                 {
-                    Compiler.EmitCode("ldc.i4 1");
+                    if ($3 == 'd')
+                        Compiler.EmitCode("ldc.r8 1");
+                    else
+                        Compiler.EmitCode("ldc.i4 1");
                     Compiler.EmitCode("sub");
+                    CheckTypes($1, $3);
                     Compiler.EmitCode("cgt");
                     $$ = 'b';
                 }
             }
             | expRel Less exp
             {
+                CheckTypes($1, $3);
                 Compiler.EmitCode("clt");
                 $$ = 'b';
             }
             | expRel LessEqual exp
             {
-                Compiler.EmitCode("ldc.i4 1");
+                 if ($3 == 'd')
+                     Compiler.EmitCode("ldc.r8 1");
+                 else
+                     Compiler.EmitCode("ldc.i4 1");
                 Compiler.EmitCode("add");
+                CheckTypes($1, $3);
                 Compiler.EmitCode("clt");
                 $$ = 'b';
             }
@@ -367,9 +381,9 @@ term      : term Multiplies log
           | log
                { $$ = $1; }
           ;
-log       : log SumLog log
+log       : log SumLog factor
                { $$ = BinaryOpGenCode(Tokens.SumLog, $1, $3, @1.StartLine); }
-          | log IlLog log
+          | log IlLog factor
                { $$ = BinaryOpGenCode(Tokens.IlLog, $1, $3, @1.StartLine); }
           | factor
                { $$ = $1; }
@@ -522,13 +536,11 @@ factor    : OpenPar
 
 string temp;
 string temp2;
-
 int pom = 0;
-int pom2 = 0;
 
 public Parser(Scanner scanner) : base(scanner) { }
 
-private char BinaryOpGenCode(Tokens t, char type1, char type2, int line)
+private void CheckTypes(char type1, char type2)
 {
     char type = (type1=='i' && type2=='i') ? 'i' : 'd' ;
     if (type1 != type)
@@ -539,6 +551,11 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2, int line)
     }
     if (type2 != type)
         Compiler.EmitCode("conv.r8");
+}
+
+private char BinaryOpGenCode(Tokens t, char type1, char type2, int line)
+{
+    CheckTypes(type1, type2);
     switch (t)
     {
         case Tokens.Plus:
@@ -564,5 +581,5 @@ private char BinaryOpGenCode(Tokens t, char type1, char type2, int line)
             ++Compiler.errors;
             break;
     }
-    return type;
+    return (type1=='i' && type2=='i') ? 'i' : 'd';
 }

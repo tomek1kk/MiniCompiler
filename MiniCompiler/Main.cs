@@ -109,12 +109,16 @@ public class Compiler
     }
     public static string GetParTemp()
     {
+        if (parStack.Count == 0)
+            return string.Format($"parx{nrPx++}");
         int n = parStack.Pop();
         return string.Format($"par{n}");
     }
 
     public static string CheckParTemp()
     {
+        if (parStack.Count == 0)
+            return string.Format($"parx{nrPx}");
         return string.Format($"par{parStack.Peek()}");
     }
     
@@ -122,6 +126,7 @@ public class Compiler
     private static int nrE = 0;
     private static int nrW = 0;
     private static int nrP = 0;
+    public static int nrPx = 0;
 
     private static Stack<int> labelStack = new Stack<int>();
     private static Stack<int> elseLabelStack = new Stack<int>();
