@@ -98,11 +98,11 @@ ifelse    : ifhead
             ;
 declare   : Int Ident Semicolon
             {
-                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != "_" + $2))
                 {
                     
-                    Compiler.EmitCode(".locals init ( int32 {0} )", $2);
-                    Compiler.symbolTable.Add($2, "int");
+                    Compiler.EmitCode(".locals init ( int32 _{0} )", $2);
+                    Compiler.symbolTable.Add("_" + $2, "int");
                 }
                 else
                 {
@@ -113,10 +113,10 @@ declare   : Int Ident Semicolon
             }
             | Double Ident Semicolon
             {
-                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != "_" + $2))
                 {
-                    Compiler.EmitCode(".locals init ( float64 {0} )", $2);
-                    Compiler.symbolTable.Add($2, "double");
+                    Compiler.EmitCode(".locals init ( float64 _{0} )", $2);
+                    Compiler.symbolTable.Add("_" + $2, "double");
                 }
                 else
                 {
@@ -126,10 +126,10 @@ declare   : Int Ident Semicolon
             }
             | Bool Ident Semicolon
             {
-                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != $2))
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != "_" + $2))
                 {
-                    Compiler.EmitCode(".locals init ( int32 {0} )", $2);
-                    Compiler.symbolTable.Add($2, "bool");
+                    Compiler.EmitCode(".locals init ( int32 _{0} )", $2);
+                    Compiler.symbolTable.Add("_" + $2, "bool");
                 }
                 else
                 {
@@ -143,10 +143,10 @@ write     : Write assign Semicolon
                 Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 if ($2 == 'd')
                 {
-                    Compiler.EmitCode("stloc _temp");
+                    Compiler.EmitCode("stloc __temp");
                     Compiler.EmitCode("call class [mscorlib]System.Globalization.CultureInfo [mscorlib]System.Globalization.CultureInfo::get_InvariantCulture()");
                     Compiler.EmitCode("ldstr \"{0:0.000000}\"");
-                    Compiler.EmitCode("ldloc _temp");
+                    Compiler.EmitCode("ldloc __temp");
                     Compiler.EmitCode("box [mscorlib]System.Double");
                     Compiler.EmitCode("call string [mscorlib]System.String::Format(class [mscorlib]System.IFormatProvider, string, object)");
                     Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
@@ -169,7 +169,7 @@ write     : Write assign Semicolon
           ;
 read      : Read Ident Semicolon
             {
-               if (!Compiler.symbolTable.ContainsKey($2)) 
+               if (!Compiler.symbolTable.ContainsKey("_" + $2)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
@@ -177,11 +177,11 @@ read      : Read Ident Semicolon
                else
                {
                     Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
-                    if (Compiler.symbolTable[$2] == "bool")
+                    if (Compiler.symbolTable["_" + $2] == "bool")
                     {
                         Compiler.EmitCode("call bool [mscorlib]System.Boolean::Parse(string)");
                     }
-                    else if (Compiler.symbolTable[$2] == "int")
+                    else if (Compiler.symbolTable["_" + $2] == "int")
                     {
                         Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
                     }
@@ -189,30 +189,30 @@ read      : Read Ident Semicolon
                     {
                        Compiler.EmitCode("call float64 [mscorlib]System.Double::Parse(string)");
                     }
-                    Compiler.EmitCode("stloc {0}", $2);
+                    Compiler.EmitCode("stloc {0}", "_" + $2);
                }
           }
           ;
 assign    :  Ident Assign assign 
           {       
-               if (!Compiler.symbolTable.ContainsKey($1)) 
+               if (!Compiler.symbolTable.ContainsKey("_" + $1)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
                }
                else
                {
-                    if (Compiler.symbolTable[$1]=="int" && $3 != 'i')
+                    if (Compiler.symbolTable["_" + $1]=="int" && $3 != 'i')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to int (use convert operator)",@1.StartLine);
                         ++Compiler.errors;
                     } 
-                    else if (Compiler.symbolTable[$1]=="double" && $3 != 'd' && $3 != 'i')
+                    else if (Compiler.symbolTable["_" + $1]=="double" && $3 != 'd' && $3 != 'i')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to double (use convert operator)",@1.StartLine);
                         ++Compiler.errors;
                     }
-                    else if (Compiler.symbolTable[$1]=="bool" && $3 != 'b')
+                    else if (Compiler.symbolTable["_" + $1]=="bool" && $3 != 'b')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to bool (use convert operator)",@1.StartLine);
                         ++Compiler.errors;
@@ -220,13 +220,13 @@ assign    :  Ident Assign assign
                     else
                     {
                         $$ = $3;
-                        if (Compiler.symbolTable[$1]=="double" && $3 =='i')
+                        if (Compiler.symbolTable["_" + $1]=="double" && $3 =='i')
                         {
                             Compiler.EmitCode("conv.r8");
                             $$ = 'd';
                         }
                         Compiler.EmitCode("dup");
-                        Compiler.EmitCode("stloc {0}", $1);
+                        Compiler.EmitCode("stloc {0}", "_" + $1);
                     }
                }
             }
@@ -505,15 +505,15 @@ factor    : OpenPar
           }
           | Ident
           {
-               if (!Compiler.symbolTable.ContainsKey($1)) 
+               if (!Compiler.symbolTable.ContainsKey("_" + $1)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", @1.StartLine);
                     Compiler.errors++;
                }
                else
                {
-                   Compiler.EmitCode("ldloc {0}", $1);
-                   switch(Compiler.symbolTable[$1])
+                   Compiler.EmitCode("ldloc {0}", "_" + $1);
+                   switch(Compiler.symbolTable["_" + $1])
                    {
                         case "int":
                             $$ = 'i';
@@ -546,9 +546,9 @@ private void CheckTypes(char type1, char type2)
     char type = (type1=='i' && type2=='i') ? 'i' : 'd' ;
     if (type1 != type)
     {
-        Compiler.EmitCode("stloc _temp");
+        Compiler.EmitCode("stloc __temp");
         Compiler.EmitCode("conv.r8");
-        Compiler.EmitCode("ldloc _temp");
+        Compiler.EmitCode("ldloc __temp");
     }
     if (type2 != type)
         Compiler.EmitCode("conv.r8");

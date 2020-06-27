@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 27.06.2020 15:08:05
+// DateTime: 27.06.2020 16:58:16
 // UserName: tomek
-// Input file <../../kompilator.y - 27.06.2020 15:08:02>
+// Input file <../../kompilator.y - 27.06.2020 16:58:15>
 
 // options: lines gplex
 
@@ -366,11 +366,11 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 28: // declare -> Int, Ident, Semicolon
 #line 100 "../../kompilator.y"
             {
-                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != ValueStack[ValueStack.Depth-2].val))
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != "_" + ValueStack[ValueStack.Depth-2].val))
                 {
                     
-                    Compiler.EmitCode(".locals init ( int32 {0} )", ValueStack[ValueStack.Depth-2].val);
-                    Compiler.symbolTable.Add(ValueStack[ValueStack.Depth-2].val, "int");
+                    Compiler.EmitCode(".locals init ( int32 _{0} )", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.symbolTable.Add("_" + ValueStack[ValueStack.Depth-2].val, "int");
                 }
                 else
                 {
@@ -384,10 +384,10 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 29: // declare -> Double, Ident, Semicolon
 #line 115 "../../kompilator.y"
             {
-                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != ValueStack[ValueStack.Depth-2].val))
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != "_" + ValueStack[ValueStack.Depth-2].val))
                 {
-                    Compiler.EmitCode(".locals init ( float64 {0} )", ValueStack[ValueStack.Depth-2].val);
-                    Compiler.symbolTable.Add(ValueStack[ValueStack.Depth-2].val, "double");
+                    Compiler.EmitCode(".locals init ( float64 _{0} )", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.symbolTable.Add("_" + ValueStack[ValueStack.Depth-2].val, "double");
                 }
                 else
                 {
@@ -400,10 +400,10 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 30: // declare -> Bool, Ident, Semicolon
 #line 128 "../../kompilator.y"
             {
-                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != ValueStack[ValueStack.Depth-2].val))
+                if (System.Linq.Enumerable.All(Compiler.symbolTable.Keys, ident => ident != "_" + ValueStack[ValueStack.Depth-2].val))
                 {
-                    Compiler.EmitCode(".locals init ( int32 {0} )", ValueStack[ValueStack.Depth-2].val);
-                    Compiler.symbolTable.Add(ValueStack[ValueStack.Depth-2].val, "bool");
+                    Compiler.EmitCode(".locals init ( int32 _{0} )", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.symbolTable.Add("_" + ValueStack[ValueStack.Depth-2].val, "bool");
                 }
                 else
                 {
@@ -419,10 +419,10 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                 Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 if (ValueStack[ValueStack.Depth-2].type == 'd')
                 {
-                    Compiler.EmitCode("stloc _temp");
+                    Compiler.EmitCode("stloc __temp");
                     Compiler.EmitCode("call class [mscorlib]System.Globalization.CultureInfo [mscorlib]System.Globalization.CultureInfo::get_InvariantCulture()");
                     Compiler.EmitCode("ldstr \"{0:0.000000}\"");
-                    Compiler.EmitCode("ldloc _temp");
+                    Compiler.EmitCode("ldloc __temp");
                     Compiler.EmitCode("box [mscorlib]System.Double");
                     Compiler.EmitCode("call string [mscorlib]System.String::Format(class [mscorlib]System.IFormatProvider, string, object)");
                     Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
@@ -450,7 +450,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 33: // read -> Read, Ident, Semicolon
 #line 171 "../../kompilator.y"
             {
-               if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-2].val)) 
+               if (!Compiler.symbolTable.ContainsKey("_" + ValueStack[ValueStack.Depth-2].val)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", LocationStack[LocationStack.Depth-3].StartLine);
                     Compiler.errors++;
@@ -458,11 +458,11 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                else
                {
                     Compiler.EmitCode("call string [mscorlib]System.Console::ReadLine()");
-                    if (Compiler.symbolTable[ValueStack[ValueStack.Depth-2].val] == "bool")
+                    if (Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-2].val] == "bool")
                     {
                         Compiler.EmitCode("call bool [mscorlib]System.Boolean::Parse(string)");
                     }
-                    else if (Compiler.symbolTable[ValueStack[ValueStack.Depth-2].val] == "int")
+                    else if (Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-2].val] == "int")
                     {
                         Compiler.EmitCode("call int32 [mscorlib]System.Int32::Parse(string)");
                     }
@@ -470,7 +470,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                     {
                        Compiler.EmitCode("call float64 [mscorlib]System.Double::Parse(string)");
                     }
-                    Compiler.EmitCode("stloc {0}", ValueStack[ValueStack.Depth-2].val);
+                    Compiler.EmitCode("stloc {0}", "_" + ValueStack[ValueStack.Depth-2].val);
                }
           }
 #line default
@@ -478,24 +478,24 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 34: // assign -> Ident, Assign, assign
 #line 197 "../../kompilator.y"
           {       
-               if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-3].val)) 
+               if (!Compiler.symbolTable.ContainsKey("_" + ValueStack[ValueStack.Depth-3].val)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", LocationStack[LocationStack.Depth-3].StartLine);
                     Compiler.errors++;
                }
                else
                {
-                    if (Compiler.symbolTable[ValueStack[ValueStack.Depth-3].val]=="int" && ValueStack[ValueStack.Depth-1].type != 'i')
+                    if (Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-3].val]=="int" && ValueStack[ValueStack.Depth-1].type != 'i')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to int (use convert operator)",LocationStack[LocationStack.Depth-3].StartLine);
                         ++Compiler.errors;
                     } 
-                    else if (Compiler.symbolTable[ValueStack[ValueStack.Depth-3].val]=="double" && ValueStack[ValueStack.Depth-1].type != 'd' && ValueStack[ValueStack.Depth-1].type != 'i')
+                    else if (Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-3].val]=="double" && ValueStack[ValueStack.Depth-1].type != 'd' && ValueStack[ValueStack.Depth-1].type != 'i')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to double (use convert operator)",LocationStack[LocationStack.Depth-3].StartLine);
                         ++Compiler.errors;
                     }
-                    else if (Compiler.symbolTable[ValueStack[ValueStack.Depth-3].val]=="bool" && ValueStack[ValueStack.Depth-1].type != 'b')
+                    else if (Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-3].val]=="bool" && ValueStack[ValueStack.Depth-1].type != 'b')
                     {
                         Console.WriteLine("line {0,3}:  semantic error - cannot convert to bool (use convert operator)",LocationStack[LocationStack.Depth-3].StartLine);
                         ++Compiler.errors;
@@ -503,13 +503,13 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
                     else
                     {
                         CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
-                        if (Compiler.symbolTable[ValueStack[ValueStack.Depth-3].val]=="double" && ValueStack[ValueStack.Depth-1].type =='i')
+                        if (Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-3].val]=="double" && ValueStack[ValueStack.Depth-1].type =='i')
                         {
                             Compiler.EmitCode("conv.r8");
                             CurrentSemanticValue.type = 'd';
                         }
                         Compiler.EmitCode("dup");
-                        Compiler.EmitCode("stloc {0}", ValueStack[ValueStack.Depth-3].val);
+                        Compiler.EmitCode("stloc {0}", "_" + ValueStack[ValueStack.Depth-3].val);
                     }
                }
             }
@@ -882,15 +882,15 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 68: // factor -> Ident
 #line 507 "../../kompilator.y"
           {
-               if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-1].val)) 
+               if (!Compiler.symbolTable.ContainsKey("_" + ValueStack[ValueStack.Depth-1].val)) 
                {
                     Console.WriteLine("line {0,3}: error - use of undeclared variable", LocationStack[LocationStack.Depth-1].StartLine);
                     Compiler.errors++;
                }
                else
                {
-                   Compiler.EmitCode("ldloc {0}", ValueStack[ValueStack.Depth-1].val);
-                   switch(Compiler.symbolTable[ValueStack[ValueStack.Depth-1].val])
+                   Compiler.EmitCode("ldloc {0}", "_" + ValueStack[ValueStack.Depth-1].val);
+                   switch(Compiler.symbolTable["_" + ValueStack[ValueStack.Depth-1].val])
                    {
                         case "int":
                             CurrentSemanticValue.type = 'i';
@@ -937,9 +937,9 @@ private void CheckTypes(char type1, char type2)
     char type = (type1=='i' && type2=='i') ? 'i' : 'd' ;
     if (type1 != type)
     {
-        Compiler.EmitCode("stloc _temp");
+        Compiler.EmitCode("stloc __temp");
         Compiler.EmitCode("conv.r8");
-        Compiler.EmitCode("ldloc _temp");
+        Compiler.EmitCode("ldloc __temp");
     }
     if (type2 != type)
         Compiler.EmitCode("conv.r8");

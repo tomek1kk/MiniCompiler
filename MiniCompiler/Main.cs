@@ -148,7 +148,7 @@ public class Compiler
         EmitCode();
 
         EmitCode("// prolog");
-        EmitCode(".locals init ( float64 _temp )");
+        EmitCode(".locals init ( float64 __temp )");
     }
 
     private static void GenEpilog()
