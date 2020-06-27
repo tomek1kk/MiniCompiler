@@ -4,7 +4,7 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 27.06.2020 14:23:36
+// DateTime: 27.06.2020 14:29:03
 // UserName: tomek
 // Input file <../../kompilator.y - 27.06.2020 14:23:34>
 

@@ -10,7 +10,7 @@
 IntNumber   ([1-9][0-9]*)|0
 RealNumber  ([1-9][0-9]*\.[0-9]+)|(0\.[0-9]+)
 Ident		([a-zA-Z])[0-9a-zA-Z]*
-String      \"[^'\"'\n]*[^'\'\n]*\"
+String      \"([^"\\\n]|\\.)*\"
 PrintErr    "print"("@"|"$"|[a-z0-9])[a-z0-9]*
 Comment     "//"[^\n]*
 
