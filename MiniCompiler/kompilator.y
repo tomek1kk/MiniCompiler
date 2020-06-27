@@ -140,6 +140,7 @@ declare   : Int Ident Semicolon
             ;
 write     : Write assign Semicolon
             {
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 if ($2 == 'd')
                 {
                     Compiler.EmitCode("stloc _temp");

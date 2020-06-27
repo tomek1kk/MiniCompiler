@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  DESKTOP-EC4UU67
-// DateTime: 27.06.2020 14:56:02
+// DateTime: 27.06.2020 15:08:05
 // UserName: tomek
-// Input file <../../kompilator.y - 27.06.2020 14:23:34>
+// Input file <../../kompilator.y - 27.06.2020 15:08:02>
 
 // options: lines gplex
 
@@ -416,6 +416,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
       case 31: // write -> Write, assign, Semicolon
 #line 142 "../../kompilator.y"
             {
+                Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 if (ValueStack[ValueStack.Depth-2].type == 'd')
                 {
                     Compiler.EmitCode("stloc _temp");
@@ -439,7 +440,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 32: // write -> Write, String, Semicolon
-#line 164 "../../kompilator.y"
+#line 165 "../../kompilator.y"
             {
                 Compiler.EmitCode("ldstr {0}", ValueStack[ValueStack.Depth-2].val);
                 Compiler.EmitCode("call void [mscorlib]System.Console::Write(string)");
@@ -447,7 +448,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 33: // read -> Read, Ident, Semicolon
-#line 170 "../../kompilator.y"
+#line 171 "../../kompilator.y"
             {
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-2].val)) 
                {
@@ -475,7 +476,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 34: // assign -> Ident, Assign, assign
-#line 196 "../../kompilator.y"
+#line 197 "../../kompilator.y"
           {       
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-3].val)) 
                {
@@ -515,14 +516,14 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 35: // assign -> expLog
-#line 233 "../../kompilator.y"
+#line 234 "../../kompilator.y"
             { 
                 CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
             }
 #line default
         break;
       case 36: // myAnd -> expRel
-#line 238 "../../kompilator.y"
+#line 239 "../../kompilator.y"
             {
                 CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
                 Compiler.EmitCode("brtrue licz{0}", ++pom);
@@ -534,7 +535,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 37: // myOr -> expRel
-#line 248 "../../kompilator.y"
+#line 249 "../../kompilator.y"
             {
                 CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type;
                 Compiler.EmitCode("brfalse licz{0}", ++pom);
@@ -546,7 +547,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 38: // expLog -> myAnd, And, expLog
-#line 258 "../../kompilator.y"
+#line 259 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type != 'b' || ValueStack[ValueStack.Depth-1].type != 'b')
                 {
@@ -562,7 +563,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 39: // expLog -> myOr, Or, expLog
-#line 271 "../../kompilator.y"
+#line 272 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type != 'b' || ValueStack[ValueStack.Depth-1].type != 'b')
                 {
@@ -578,12 +579,12 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 40: // expLog -> expRel
-#line 283 "../../kompilator.y"
+#line 284 "../../kompilator.y"
                      { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 41: // expRel -> expRel, Equal, exp
-#line 286 "../../kompilator.y"
+#line 287 "../../kompilator.y"
             {
                 if ((ValueStack[ValueStack.Depth-3].type == 'b' && ValueStack[ValueStack.Depth-1].type != 'b') || (ValueStack[ValueStack.Depth-3].type != 'b' && ValueStack[ValueStack.Depth-1].type == 'b'))
                 {
@@ -601,7 +602,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 42: // expRel -> expRel, NotEqual, exp
-#line 301 "../../kompilator.y"
+#line 302 "../../kompilator.y"
             {
                 if ((ValueStack[ValueStack.Depth-3].type == 'b' && ValueStack[ValueStack.Depth-1].type != 'b') || (ValueStack[ValueStack.Depth-3].type != 'b' && ValueStack[ValueStack.Depth-1].type == 'b'))
                 {
@@ -621,7 +622,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 43: // expRel -> expRel, Greater, exp
-#line 318 "../../kompilator.y"
+#line 319 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type == 'b' || ValueStack[ValueStack.Depth-1].type == 'b')
                 {
@@ -638,7 +639,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 44: // expRel -> expRel, GreaterEqual, exp
-#line 332 "../../kompilator.y"
+#line 333 "../../kompilator.y"
             {
                 if (ValueStack[ValueStack.Depth-3].type == 'b' || ValueStack[ValueStack.Depth-1].type == 'b')
                 {
@@ -660,7 +661,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 45: // expRel -> expRel, Less, exp
-#line 351 "../../kompilator.y"
+#line 352 "../../kompilator.y"
             {
                 CheckTypes(ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type);
                 Compiler.EmitCode("clt");
@@ -669,7 +670,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 46: // expRel -> expRel, LessEqual, exp
-#line 357 "../../kompilator.y"
+#line 358 "../../kompilator.y"
             {
                  if (ValueStack[ValueStack.Depth-1].type == 'd')
                      Compiler.EmitCode("ldc.r8 1");
@@ -683,64 +684,64 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 47: // expRel -> exp
-#line 367 "../../kompilator.y"
+#line 368 "../../kompilator.y"
                   { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 48: // exp -> exp, Plus, term
-#line 370 "../../kompilator.y"
+#line 371 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Plus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
       case 49: // exp -> exp, Minus, term
-#line 372 "../../kompilator.y"
+#line 373 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Minus, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
       case 50: // exp -> term
-#line 374 "../../kompilator.y"
+#line 375 "../../kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 51: // term -> term, Multiplies, log
-#line 378 "../../kompilator.y"
+#line 379 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Multiplies, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
       case 52: // term -> term, Divides, log
-#line 380 "../../kompilator.y"
+#line 381 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.Divides, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
       case 53: // term -> log
-#line 382 "../../kompilator.y"
+#line 383 "../../kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 54: // log -> log, SumLog, factor
-#line 385 "../../kompilator.y"
+#line 386 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.SumLog, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
       case 55: // log -> log, IlLog, factor
-#line 387 "../../kompilator.y"
+#line 388 "../../kompilator.y"
                { CurrentSemanticValue.type = BinaryOpGenCode(Tokens.IlLog, ValueStack[ValueStack.Depth-3].type, ValueStack[ValueStack.Depth-1].type, LocationStack[LocationStack.Depth-3].StartLine); }
 #line default
         break;
       case 56: // log -> factor
-#line 389 "../../kompilator.y"
+#line 390 "../../kompilator.y"
                { CurrentSemanticValue.type = ValueStack[ValueStack.Depth-1].type; }
 #line default
         break;
       case 57: // Anon@4 -> /* empty */
-#line 392 "../../kompilator.y"
+#line 393 "../../kompilator.y"
           {
             Compiler.AddParTemp();
           }
 #line default
         break;
       case 58: // factor -> OpenPar, Anon@4, assign, ClosePar
-#line 397 "../../kompilator.y"
+#line 398 "../../kompilator.y"
           { 
             CurrentSemanticValue.type = ValueStack[ValueStack.Depth-2].type; 
             Compiler.EmitCode("{0}:", Compiler.GetParTemp());
@@ -748,7 +749,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 59: // factor -> Minus, factor
-#line 402 "../../kompilator.y"
+#line 403 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'b')
             {
@@ -764,7 +765,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 60: // factor -> Exclamation, factor
-#line 415 "../../kompilator.y"
+#line 416 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'b')
             {
@@ -781,7 +782,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 61: // factor -> Neg, factor
-#line 429 "../../kompilator.y"
+#line 430 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type != 'i')
             {
@@ -797,7 +798,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 62: // factor -> OpenPar, Int, ClosePar, factor
-#line 442 "../../kompilator.y"
+#line 443 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'd')
             {
@@ -821,7 +822,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 63: // factor -> OpenPar, Double, ClosePar, factor
-#line 463 "../../kompilator.y"
+#line 464 "../../kompilator.y"
           {
             if (ValueStack[ValueStack.Depth-1].type == 'd')
             {
@@ -846,7 +847,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 64: // factor -> IntNumber
-#line 485 "../../kompilator.y"
+#line 486 "../../kompilator.y"
           {
                Compiler.EmitCode("ldc.i4 {0}",int.Parse(ValueStack[ValueStack.Depth-1].val));
                CurrentSemanticValue.type = 'i'; 
@@ -854,7 +855,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 65: // factor -> RealNumber
-#line 490 "../../kompilator.y"
+#line 491 "../../kompilator.y"
           {
                double d = double.Parse(ValueStack[ValueStack.Depth-1].val,System.Globalization.CultureInfo.InvariantCulture);
                Compiler.EmitCode(string.Format(System.Globalization.CultureInfo.InvariantCulture,"ldc.r8 {0}",d));
@@ -863,7 +864,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 66: // factor -> True
-#line 496 "../../kompilator.y"
+#line 497 "../../kompilator.y"
           {
                 Compiler.EmitCode("ldc.i4 1");
                 CurrentSemanticValue.type = 'b';
@@ -871,7 +872,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 67: // factor -> False
-#line 501 "../../kompilator.y"
+#line 502 "../../kompilator.y"
           {
                 Compiler.EmitCode("ldc.i4 0");
                 CurrentSemanticValue.type = 'b';
@@ -879,7 +880,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
 #line default
         break;
       case 68: // factor -> Ident
-#line 506 "../../kompilator.y"
+#line 507 "../../kompilator.y"
           {
                if (!Compiler.symbolTable.ContainsKey(ValueStack[ValueStack.Depth-1].val)) 
                {
@@ -923,7 +924,7 @@ public class Parser: ShiftReduceParser<ValueType, LexLocation>
         return CharToString((char)terminal);
   }
 
-#line 536 "../../kompilator.y"
+#line 537 "../../kompilator.y"
 
 string temp;
 string temp2;
