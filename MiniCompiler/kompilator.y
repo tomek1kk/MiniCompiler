@@ -287,6 +287,7 @@ expLog    : expLog
                 else
                 {
                     Compiler.EmitCode("or");
+                    Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                     $$ = 'b';
                 }
             }
