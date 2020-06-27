@@ -142,7 +142,7 @@ public class Compiler
         EmitCode(".method static void main()");
         EmitCode("{");
         EmitCode(".entrypoint");
-        EmitCode(".maxstack 32");
+        EmitCode(".maxstack 64");
         EmitCode(".try");
         EmitCode("{");
         EmitCode();
