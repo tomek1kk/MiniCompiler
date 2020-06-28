@@ -15,7 +15,7 @@ public char    type;
 %token Equal NotEqual Greater GreaterEqual Less LessEqual And Or Exclamation Neg
 %token <val> Ident IntNumber RealNumber String
 
-%type <type> code stat exp term factor declare cond while log assign expLog expRel myAnd myOr
+%type <type> code stat exp term factor declare cond while log assign expLog expRel
 
 %%
 start    : Program OpenBracket declars CloseBracket
@@ -55,6 +55,11 @@ while     : While
             }
             OpenPar assign ClosePar 
             { 
+                if ($4 != 'b')
+                {
+                    Console.WriteLine("line {0,3}:  statement must be bool type", @1.StartLine);
+                    Compiler.errors++;
+                }
                 Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 temp = Compiler.AddIfTemp();
                 Compiler.EmitCode("brfalse {0}", temp); 
@@ -69,6 +74,11 @@ while     : While
           ;
 ifhead    : If OpenPar assign ClosePar
             {
+                if ($3 != 'b')
+                {
+                    Console.WriteLine("line {0,3}:  statement must be bool type", @1.StartLine);
+                    Compiler.errors++;
+                }
                 Compiler.EmitCode("{0}:", Compiler.GetParTemp());
                 temp = Compiler.AddIfTemp();
                 Compiler.EmitCode("brfalse {0}", temp);
@@ -235,16 +245,6 @@ assign    :  Ident Assign assign
                 $$ = $1;
             }
           ;
-myAnd     : expRel
-            {
-                $$ = $1;
-            }
-            ;
-myOr      : expRel
-            {
-                $$ = $1;
-            }
-           ;
 expLog    : expLog 
             {                
                 Compiler.AddParTemp(); 
@@ -254,7 +254,7 @@ expLog    : expLog
                 Compiler.EmitCode("licz{0}:", pom);
                 Compiler.EmitCode("ldc.i4 1");  
             } 
-            And myAnd
+            And expRel
             {
                 if ($1 != 'b' || $4 != 'b')
                 {
@@ -277,7 +277,7 @@ expLog    : expLog
                 Compiler.EmitCode("licz{0}:", pom);
                 Compiler.EmitCode("ldc.i4 0");
             }
-            Or myOr
+            Or expRel
             {
                 if ($1 != 'b' || $4 != 'b')
                 {
@@ -348,54 +348,124 @@ expRel    : expRel Equal exp
                 }
                 else
                 {
-                    if ($3 == 'd')
-                        Compiler.EmitCode("ldc.r8 1");
-                    else
-                        Compiler.EmitCode("ldc.i4 1");
-                    Compiler.EmitCode("sub");
                     CheckTypes($1, $3);
-                    Compiler.EmitCode("cgt");
+                    Compiler.EmitCode("clt");
+                    Compiler.EmitCode("ldc.i4 0");
+                    Compiler.EmitCode("ceq");
                     $$ = 'b';
                 }
             }
             | expRel Less exp
             {
-                CheckTypes($1, $3);
-                Compiler.EmitCode("clt");
-                $$ = 'b';
+                if ($1 == 'b' || $3 == 'b')
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - < operator cannot be used to bool arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    CheckTypes($1, $3);
+                    Compiler.EmitCode("clt");
+                    $$ = 'b';
+                }
             }
             | expRel LessEqual exp
             {
-                 if ($3 == 'd')
-                     Compiler.EmitCode("ldc.r8 1");
-                 else
-                     Compiler.EmitCode("ldc.i4 1");
-                Compiler.EmitCode("add");
-                CheckTypes($1, $3);
-                Compiler.EmitCode("clt");
-                $$ = 'b';
+                if ($1 == 'b' || $3 == 'b')
+                {
+                    Console.WriteLine("line {0,3}:  semantic error - <= operator cannot be used to bool arguments",@1.StartLine);
+                    ++Compiler.errors;
+                }
+                else
+                {
+                    CheckTypes($1, $3);
+                    Compiler.EmitCode("cgt");
+                    Compiler.EmitCode("ldc.i4 0");
+                    Compiler.EmitCode("ceq");
+                    $$ = 'b';
+                }
             }
             | exp { $$ = $1; }
             ;
 exp       : exp Plus term
-               { $$ = BinaryOpGenCode(Tokens.Plus, $1, $3, @1.StartLine); }
+          { 
+            if ($1 == 'b' || $3 == 'b')
+            {
+                Console.WriteLine("line {0,3}:  arguments cannot be bool to use + operator",@1.StartLine);
+                ++Compiler.errors;
+            }
+            else
+            {
+                $$ = BinaryOpGenCode(Tokens.Plus, $1, $3, @1.StartLine); 
+            }
+          }
           | exp Minus term
-               { $$ = BinaryOpGenCode(Tokens.Minus, $1, $3, @1.StartLine); }
+          { 
+            if ($1 == 'b' || $3 == 'b')
+            {
+                Console.WriteLine("line {0,3}:  arguments cannot be bool to use - operator",@1.StartLine);
+                ++Compiler.errors;
+            }
+            else
+            {
+                $$ = BinaryOpGenCode(Tokens.Minus, $1, $3, @1.StartLine); 
+            }
+          }
           | term
                { $$ = $1; }
           ;
 
 term      : term Multiplies log
-               { $$ = BinaryOpGenCode(Tokens.Multiplies, $1, $3, @1.StartLine); }
+          { 
+            if ($1 == 'b' || $3 == 'b')
+            {
+                Console.WriteLine("line {0,3}:  arguments cannot be bool to use * operator",@1.StartLine);
+                ++Compiler.errors;
+            }
+            else
+            {
+                $$ = BinaryOpGenCode(Tokens.Multiplies, $1, $3, @1.StartLine); 
+            }
+          }
           | term Divides log
-               { $$ = BinaryOpGenCode(Tokens.Divides, $1, $3, @1.StartLine); }
+          { 
+            if ($1 == 'b' || $3 == 'b')
+            {
+                Console.WriteLine("line {0,3}:  arguments cannot be bool to use / operator",@1.StartLine);
+                ++Compiler.errors;
+            }
+            else
+            {
+                $$ = BinaryOpGenCode(Tokens.Divides, $1, $3, @1.StartLine); 
+            }
+          }
           | log
                { $$ = $1; }
           ;
 log       : log SumLog factor
-               { $$ = BinaryOpGenCode(Tokens.SumLog, $1, $3, @1.StartLine); }
+          {
+            if ($1 != 'i' || $3 != 'i')
+            {
+                Console.WriteLine("line {0,3}:  arguments must be int to use | operator",@1.StartLine);
+                ++Compiler.errors;
+            }
+            else
+            {
+                $$ = BinaryOpGenCode(Tokens.SumLog, $1, $3, @1.StartLine);
+            }
+          }
           | log IlLog factor
-               { $$ = BinaryOpGenCode(Tokens.IlLog, $1, $3, @1.StartLine); }
+          { 
+            if ($1 != 'i' || $3 != 'i')
+            {
+                Console.WriteLine("line {0,3}:  arguments must be int to use & operator",@1.StartLine);
+                ++Compiler.errors;
+            }
+            else
+            {
+                $$ = BinaryOpGenCode(Tokens.IlLog, $1, $3, @1.StartLine);
+            }
+          }
           | factor
                { $$ = $1; }
           ;

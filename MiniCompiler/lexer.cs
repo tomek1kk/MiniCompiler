@@ -6,9 +6,9 @@
 //
 //  GPLEX Version:  1.2.2
 //  Machine:  DESKTOP-EC4UU67
-//  DateTime: 27.06.2020 20:42:31
+//  DateTime: 28.06.2020 10:16:06
 //  UserName: tomek
-//  GPLEX input file <../../kompilator.lex - 27.06.2020 14:29:02>
+//  GPLEX input file <../../kompilator.lex - 28.06.2020 09:45:24>
 //  GPLEX frame file <embedded resource>
 //
 //  Option settings: parser, minimize
@@ -169,26 +169,26 @@ public override void yyerror(string msg, params object[] args)
 
     static int[] startState = new int[] {89, 0};
 
-    static Table[] NxS = new Table[93] {
+    static Table[] NxS = new Table[94] {
 /* NxS[   0] */ new Table(0, 0, 0, null),
 /* NxS[   1] */ new Table(0, 0, -1, null),
 /* NxS[   2] */ new Table(0, 0, -1, null),
 /* NxS[   3] */ new Table(0, 0, -1, null),
 /* NxS[   4] */ new Table(0, 0, -1, null),
 /* NxS[   5] */ new Table(61, 1, -1, new sbyte[] {88}),
-/* NxS[   6] */ new Table(10, 83, 91, new sbyte[] {-1, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 87, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 92}),
+/* NxS[   6] */ new Table(10, 83, 92, new sbyte[] {-1, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 87, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 93}),
 /* NxS[   7] */ new Table(38, 1, -1, new sbyte[] {86}),
 /* NxS[   8] */ new Table(0, 0, -1, null),
 /* NxS[   9] */ new Table(0, 0, -1, null),
 /* NxS[  10] */ new Table(0, 0, -1, null),
 /* NxS[  11] */ new Table(0, 0, -1, null),
 /* NxS[  12] */ new Table(0, 0, -1, null),
-/* NxS[  13] */ new Table(47, 1, -1, new sbyte[] {85}),
+/* NxS[  13] */ new Table(47, 1, -1, new sbyte[] {91}),
 /* NxS[  14] */ new Table(46, 1, -1, new sbyte[] {90}),
 /* NxS[  15] */ new Table(46, 12, -1, new sbyte[] {90, -1, 15, 15, 15, 15, 
           15, 15, 15, 15, 15, 15}),
@@ -543,7 +543,7 @@ public override void yyerror(string msg, params object[] args)
 /* NxS[  83] */ new Table(0, 0, -1, null),
 /* NxS[  84] */ new Table(48, 10, -1, new sbyte[] {84, 84, 84, 84, 84, 84, 
           84, 84, 84, 84}),
-/* NxS[  85] */ new Table(10, 1, 85, new sbyte[] {-1}),
+/* NxS[  85] */ new Table(0, 0, -1, null),
 /* NxS[  86] */ new Table(0, 0, -1, null),
 /* NxS[  87] */ new Table(0, 0, -1, null),
 /* NxS[  88] */ new Table(0, 0, -1, null),
@@ -557,13 +557,14 @@ public override void yyerror(string msg, params object[] args)
           20, 26, 20, 27, 20, 28, 20, 20, 29, 20, 20, 20, 30, 31, 32, 33}),
 /* NxS[  90] */ new Table(48, 10, -1, new sbyte[] {84, 84, 84, 84, 84, 84, 
           84, 84, 84, 84}),
-/* NxS[  91] */ new Table(10, 83, 91, new sbyte[] {-1, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 87, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 
-          91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 92}),
-/* NxS[  92] */ new Table(10, 1, 91, new sbyte[] {-1}),
+/* NxS[  91] */ new Table(10, 1, 91, new sbyte[] {85}),
+/* NxS[  92] */ new Table(10, 83, 92, new sbyte[] {-1, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 87, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 
+          92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 92, 93}),
+/* NxS[  93] */ new Table(10, 1, 92, new sbyte[] {-1}),
     };
 
 int NextState() {
