@@ -224,3 +224,13 @@ Output:
 poo
 doo
 ```
+
+## Running program
+
+To build compiler run following command in main project folder:
+```
+gplex /out:lexer.cs kompilator.lex
+gppg /gplex /out:parser.cs kompilator.y
+```
+
+Move file with source code to bin/Debug folder. Run project and type its name from keyboard. After successful compilation, .il file is generated in bin/Debug folder. You can make .exe file using ilasm program.
